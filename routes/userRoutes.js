@@ -17,7 +17,7 @@ router.post('/userSignup', async (req, res) => {
         if (!passwordCheck) {
             return res.json({ message: 'password doesnot match' })
         }
-        await newUser.savse();
+        await newUser.save();
         res.json({ message: 'Password saved' })
     }
     catch (error) {
@@ -34,21 +34,19 @@ router.get('/getUserSignup', (req, res) => {
 
 
 router.post('/postLogin', async (req, res) => {
-    const { username, password } = req.body;
-    user.findOne({ username });
-    if (!userData) {
-        return res.status(401)({ message: 'username not found' })
-    }
-    const isPasswordMatch = password === userData.confirmPassword;
-    try{
-        if (!isPasswordMatch) {
-            console.log('password is incorrect');
-            return res.status(401).json({ message: 'Incorrect password' });
-        }  
-    }
-    catch(error){
+    const { email, password } = req.body;
+    const findUser = await user.findOne({ email });
+    if (!findUser) {
         console.log(error);
-        res.json({message:'Internal server error'})
+        return res.json({ message: 'username not found' })
     }
+    const isPasswordMatch = password === findUser.password;
+    if (!isPasswordMatch) {
+        console.log('password is incorrect');
+        return res.json({ message: 'Incorrect password' });
+    }
+    res.json({message:'login sucessful '})
+
+
 })
 module.exports = router;
