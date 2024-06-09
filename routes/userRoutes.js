@@ -5,8 +5,6 @@ const user = require('../models/userModel');
 
 router.post('/userSignup', async (req, res) => {
     try {
-
-
         const newUser = new user({
             username: req.body.username,
             email: req.body.email,
