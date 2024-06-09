@@ -43,7 +43,8 @@ router.post('/postLogin', async (req, res) => {
         console.log('password is incorrect');
         return res.json({ message: 'Incorrect password' });
     }
-    res.json({message:'login sucessful '})
+    const userRole = finsUser.role;
+    res.json({message:'login sucessful ',role:userRole})
 
 
 })
