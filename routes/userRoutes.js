@@ -47,8 +47,9 @@ router.post('/postLogin', async (req, res) => {
         console.log('password is incorrect');
         return res.json({ message: 'Incorrect password' });
     }
-    const userRole = finsUser.role;
-    res.json({message:'login sucessful ',role:userRole})
+    const userRole = findUser.role;
+    const token = jwt.sign({ email: findUser.email, userId: findUser._id , firstName: findUser.firstName , phone: findUser.phone}, 'secretKey');
+    res.json({ message: 'Login Sucessfull', role: userRole, token: token });
 
 
 })
