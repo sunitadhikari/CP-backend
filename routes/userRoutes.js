@@ -6,10 +6,14 @@ const user = require('../models/userModel');
 router.post('/userSignup', async (req, res) => {
     try {
         const newUser = new user({
-            username: req.body.username,
+            firstName: req.body.firstName,
+            lastName: req.body.lastName,
+            phone: req.body.phone,
             email: req.body.email,
             password: req.body.password,
-            confirmPassword: req.body.confirmPassword
+            confirmPassword: req.body.confirmPassword,
+            termCondition: req.body.termCondition,
+            role: req.body.role,
         })
         const passwordCheck = newUser.password == newUser.confirmPassword
         if (!passwordCheck) {
