@@ -39,7 +39,7 @@ router.post('/postLogin', async (req, res) => {
     const { email, password } = req.body;
     const findUser = await user.findOne({ email });
     if (!findUser) {
-        console.log(error);
+        // console.log(error);
         return res.json({ message: 'username not found' })
     }
     const isPasswordMatch = password === findUser.password;

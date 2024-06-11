@@ -5,9 +5,10 @@ const doctorSchema = new mongoose.Schema({
   lastName: { type: String, required: true },
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
+  confirmPassword: { type: String, required: true },
   department: { type: String },
   picture: { type: String },
-  dob: { type: Date },
+  dob: { type: String },
   sex: { type: String, required: true },
   bloodGroup: { type: String },
   designation: { type: String, required: true },
@@ -16,7 +17,6 @@ const doctorSchema = new mongoose.Schema({
   mobileNo: { type: String, required: true },
   careerTitle: { type: String, required: true },
   biography: { type: String },
-  status: { type: String, required: true }
 });
 
 const Doctor = mongoose.model('Doctor', doctorSchema);
