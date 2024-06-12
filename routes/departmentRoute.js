@@ -12,7 +12,7 @@ router.post('/addDepartment', async (req, res) => {
   }
 });
 
-router.get('/getdepartment', async (req, res) => {
+router.get('/getDepartment', async (req, res) => {
   try {
     const departments = await Department.find({});
     res.send(departments);

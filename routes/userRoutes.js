@@ -5,8 +5,6 @@ const user = require('../models/userModel');
 
 router.post('/userSignup', async (req, res) => {
     try {
-
-
         const newUser = new user({
             firstName: req.body.firstName,
             lastName: req.body.lastName,
@@ -41,7 +39,7 @@ router.post('/postLogin', async (req, res) => {
     const { email, password } = req.body;
     const findUser = await user.findOne({ email });
     if (!findUser) {
-        console.log(error);
+        // console.log(error);
         return res.json({ message: 'username not found' })
     }
     const isPasswordMatch = password === findUser.password;
@@ -49,8 +47,9 @@ router.post('/postLogin', async (req, res) => {
         console.log('password is incorrect');
         return res.json({ message: 'Incorrect password' });
     }
-    const userRole = finsUser.role;
-    res.json({message:'login sucessful ',role:userRole})
+    const userRole = findUser.role;
+    const token = jwt.sign({ email: findUser.email, userId: findUser._id , firstName: findUser.firstName , phone: findUser.phone}, 'secretKey');
+    res.json({ message: 'Login Sucessfull', role: userRole, token: token });
 
 
 })

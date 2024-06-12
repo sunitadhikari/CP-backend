@@ -1,7 +1,6 @@
-// routes/doctorRoutes.js
 const express = require('express');
 const router = express.Router();
-const Doctor = require('./userRoutes');
+const Doctor = require('../models/doctorModel');
 
 router.post('/addDoctor', async (req, res) => {
   try {
@@ -15,7 +14,7 @@ router.post('/addDoctor', async (req, res) => {
 
 router.get('/getDoctor', async (req, res) => {
   try {
-    const doctors = await Doctor.find({});
+    const doctors = await Doctor.find();
     res.send(doctors);
   } catch (error) {
     res.status(500).send(error);
