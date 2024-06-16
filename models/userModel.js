@@ -12,7 +12,7 @@ const userSchema = new mongoose.Schema({
     termCondition: { type: Boolean },
     role: {
         type: String,
-        enum: ["doctor", "patient", "admin"],
+        enum: ["doctor", "patient", "labtec","admin"],
         default: "patient"
     }
 })

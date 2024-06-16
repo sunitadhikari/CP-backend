@@ -1,8 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const Room = require('../models/roomModel');
+const verifyToken=require('../middleware');
 
-router.post('postRoom/', async (req, res) => {
+
+router.post('postRoom/',verifyToken, async (req, res) => {
     try {
         const room = new Room(req.body);
         await room.save();
@@ -12,7 +14,7 @@ router.post('postRoom/', async (req, res) => {
     }
 });
 
-router.get('getRoom/', async (req, res) => {
+router.get('getRoom/',verifyToken, async (req, res) => {
     try {
         const rooms = await Room.find();
         res.json(rooms);
@@ -25,7 +27,7 @@ router.get('getRoom/:id',  (req, res) => {
     res.json(res.room);
 });
 
-router.patch('patchRoom/:id',  async (req, res) => {
+router.patch('patchRoom/:id',verifyToken,  async (req, res) => {
     if (req.body.name != null) {
         res.room.name = req.body.name;
     }
@@ -50,7 +52,7 @@ router.patch('patchRoom/:id',  async (req, res) => {
     }
 });
 
-router.delete('delRoom/:id',  async (req, res) => {
+router.delete('delRoom/:id',verifyToken,  async (req, res) => {
     try {
         await res.room.remove();
         res.json({ message: 'Deleted room' });

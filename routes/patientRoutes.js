@@ -1,8 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const Person = require('../models/patientModel');
+const verifyToken=require('../middleware');
 
-router.post('/postPatient', async (req, res) => {
+
+router.post('/postPatient',verifyToken, async (req, res) => {
     try {
         const person = new Person(req.body);
         await person.save();
@@ -12,7 +14,7 @@ router.post('/postPatient', async (req, res) => {
     }
 });
 
-router.get('/getPatient', async (req, res) => {
+router.get('/getPatient',verifyToken, async (req, res) => {
     try {
         const persons = await Person.find();
         res.json(persons);
@@ -25,7 +27,7 @@ router.get('/getPatientById:id',  (req, res) => {
     res.json(res.person);
 });
 
-router.patch('/patchPatient:id',  async (req, res) => {
+router.patch('/patchPatient:id', verifyToken, async (req, res) => {
     if (req.body.firstName != null) {
         res.person.firstName = req.body.firstName;
     }
@@ -41,7 +43,7 @@ router.patch('/patchPatient:id',  async (req, res) => {
     }
 });
 
-router.delete('/delPatient:id',  async (req, res) => {
+router.delete('/delPatient:id', verifyToken, async (req, res) => {
     try {
         await res.person.remove();
         res.json({ message: 'Deleted person' });
