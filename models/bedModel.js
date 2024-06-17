@@ -5,6 +5,7 @@ const bedSchema = new mongoose.Schema({
     bedNumber: { type: Number, required: true },
     bedCapacity: { type: Number, required: true },
     description: { type: String },
+    charge:{type:Number},
     status: { type: String, enum: ['Active', 'Inactive'], default: 'Active' }
 });
 

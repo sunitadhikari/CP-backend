@@ -2,17 +2,18 @@ const express = require('express');
 const router = express.Router();
 const Room = require('../models/roomModel');
 
-router.post('postRoom/', async (req, res) => {
+router.post('/postRoom', async (req, res) => {
     try {
         const room = new Room(req.body);
         await room.save();
+        console.log('data saved');
         res.status(201).json(room);
     } catch (err) {
         res.status(400).json({ message: err.message });
     }
 });
 
-router.get('getRoom/', async (req, res) => {
+router.get('/getRoom', async (req, res) => {
     try {
         const rooms = await Room.find();
         res.json(rooms);
@@ -21,11 +22,11 @@ router.get('getRoom/', async (req, res) => {
     }
 });
 
-router.get('getRoom/:id',  (req, res) => {
+router.get('/getRoom/:id',  (req, res) => {
     res.json(res.room);
 });
 
-router.patch('patchRoom/:id',  async (req, res) => {
+router.patch('/patchRoom:id',  async (req, res) => {
     if (req.body.name != null) {
         res.room.name = req.body.name;
     }
@@ -50,7 +51,7 @@ router.patch('patchRoom/:id',  async (req, res) => {
     }
 });
 
-router.delete('delRoom/:id',  async (req, res) => {
+router.delete('/delRoom/:id',  async (req, res) => {
     try {
         await res.room.remove();
         res.json({ message: 'Deleted room' });

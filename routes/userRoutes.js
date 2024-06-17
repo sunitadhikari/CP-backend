@@ -28,7 +28,7 @@ router.post('/userSignup', async (req, res) => {
 })
 
 
-router.get('/getUserSignup', (req, res) => {
+router.get('/register', (req, res) => {
     user.find()
         .then(data => res.send(data))
         .catch(err => console.log(err))

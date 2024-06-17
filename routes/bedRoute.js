@@ -39,6 +39,9 @@ router.patch('patchBed/:id', getBed, async (req, res) => {
     if (req.body.bedCapacity != null) {
         res.bed.bedCapacity = req.body.bedCapacity;
     }
+    if (req.body.charge != null) {
+        res.bed.charge = req.body.charge;
+    }
     if (req.body.description != null) {
         res.bed.description = req.body.description;
     }
