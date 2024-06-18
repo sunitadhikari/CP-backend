@@ -7,7 +7,8 @@ router.post('/postPatient', async (req, res) => {
         const person = new Person(req.body);
         await person.save();
         res.status(201).json(person);
-    } catch (err) {
+    } 
+    catch (err) {
         res.status(400).json({ message: err.message });
     }
 });
@@ -21,11 +22,11 @@ router.get('/getPatient', async (req, res) => {
     }
 });
 
-router.get('/getPatientById:id',  (req, res) => {
+router.get('/getPatientById:id', (req, res) => {
     res.json(res.person);
 });
 
-router.patch('/patchPatient:id',  async (req, res) => {
+router.patch('/patchPatient:id', async (req, res) => {
     if (req.body.firstName != null) {
         res.person.firstName = req.body.firstName;
     }
@@ -41,7 +42,7 @@ router.patch('/patchPatient:id',  async (req, res) => {
     }
 });
 
-router.delete('/delPatient:id',  async (req, res) => {
+router.delete('/delPatient:id', async (req, res) => {
     try {
         await res.person.remove();
         res.json({ message: 'Deleted person' });
