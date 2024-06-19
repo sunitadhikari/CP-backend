@@ -7,7 +7,8 @@ router.post('/addDoctor', async (req, res) => {
     const doctor = new Doctor(req.body);
     await doctor.save();
     res.status(201).send(doctor);
-  } catch (error) {
+  }
+  catch (error) {
     res.status(400).send(error);
   }
 });
