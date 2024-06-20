@@ -1,8 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const Department = require('../models/departmentModel');
+const verifyToken=require('../middleware');
 
-router.post('/addDepartment', async (req, res) => {
+
+router.post('/addDepartment',verifyToken, async (req, res) => {
   try {
     const department = new Department(req.body);
     await department.save();
@@ -12,7 +14,7 @@ router.post('/addDepartment', async (req, res) => {
   }
 });
 
-router.get('/getDepartment', async (req, res) => {
+router.get('/getDepartment',verifyToken, async (req, res) => {
   try {
     const departments = await Department.find({});
     res.send(departments);
@@ -21,7 +23,7 @@ router.get('/getDepartment', async (req, res) => {
   }
 });
 
-router.get('/getdepartment:id', async (req, res) => {
+router.get('/getdepartment:id',verifyToken, async (req, res) => {
   try {
     const department = await Department.findById(req.params.id);
     if (!department) {
@@ -33,7 +35,7 @@ router.get('/getdepartment:id', async (req, res) => {
   }
 });
 
-router.patch('/patchDepartment:id', async (req, res) => {
+router.patch('/patchDepartment:id',verifyToken, async (req, res) => {
   try {
     const department = await Department.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
     if (!department) {
@@ -45,7 +47,7 @@ router.patch('/patchDepartment:id', async (req, res) => {
   }
 });
 
-router.delete('/delDepartment:id', async (req, res) => {
+router.delete('/delDepartment:id',verifyToken, async (req, res) => {
   try {
     const department = await Department.findByIdAndDelete(req.params.id);
     if (!department) {

@@ -1,8 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const Doctor = require('../models/doctorModel');
+const verifyToken=require('../middleware');
 
-router.post('/addDoctor', async (req, res) => {
+
+router.post('/addDoctor',verifyToken, async (req, res) => {
   try {
     const doctor = new Doctor(req.body);
     await doctor.save();
@@ -13,7 +15,7 @@ router.post('/addDoctor', async (req, res) => {
   }
 });
 
-router.get('/getDoctor', async (req, res) => {
+router.get('/getDoctor',verifyToken, async (req, res) => {
   try {
     const doctors = await Doctor.find();
     res.send(doctors);
@@ -22,7 +24,7 @@ router.get('/getDoctor', async (req, res) => {
   }
 });
 
-router.get('/getDoctor:id', async (req, res) => {
+router.get('/getDoctor:id',verifyToken, async (req, res) => {
   try {
     const doctor = await Doctor.findById(req.params.id);
     if (!doctor) {
@@ -34,7 +36,7 @@ router.get('/getDoctor:id', async (req, res) => {
   }
 });
 
-router.patch('/patchDoctor:id', async (req, res) => {
+router.patch('/patchDoctor:id',verifyToken, async (req, res) => {
   const updates = Object.keys(req.body);
   const allowedUpdates = ['firstName', 'lastName', 'email', 'password', 'department', 'picture', 'dob', 'sex', 'bloodGroup', 'designation', 'address', 'phoneNo', 'mobileNo', 'careerTitle', 'biography', 'status'];
   const isValidOperation = updates.every((update) => allowedUpdates.includes(update));
@@ -58,7 +60,7 @@ router.patch('/patchDoctor:id', async (req, res) => {
   }
 });
 
-router.delete('/delDoctor:id', async (req, res) => {
+router.delete('/delDoctor:id',verifyToken, async (req, res) => {
   try {
     const doctor = await Doctor.findByIdAndDelete(req.params.id);
 

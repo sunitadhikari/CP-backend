@@ -1,9 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const Bed = require('../models/bedModel');
+const verifyToken=require('../middleware');
+
 
 // Create a bed
-router.post('/postBed', async (req, res) => {
+router.post('/postBed',verifyToken, async (req, res) => {
     try {
         const bed = new Bed(req.body);
         await bed.save();
@@ -14,7 +16,7 @@ router.post('/postBed', async (req, res) => {
 });
 
 // Get all beds
-router.get('/getBed', async (req, res) => {
+router.get('/getBed',verifyToken, async (req, res) => {
     try {
         const beds = await Bed.find();
         res.json(beds);
@@ -24,12 +26,12 @@ router.get('/getBed', async (req, res) => {
 });
 
 // Get one bed
-router.get('getBedById/:id', getBed, (req, res) => {
+router.get('getBedById/:id',verifyToken, getBed, (req, res) => {
     res.json(res.bed);
 });
 
 // Update one bed
-router.patch('patchBed/:id', getBed, async (req, res) => {
+router.patch('patchBed/:id',verifyToken, getBed, async (req, res) => {
     if (req.body.name != null) {
         res.bed.name = req.body.name;
     }

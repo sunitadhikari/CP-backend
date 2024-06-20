@@ -2,6 +2,8 @@ const express = require("express")
 const router = express.Router()
 const jwt = require('jsonwebtoken')
 const user = require('../models/userModel');
+const verifyToken=require('../middleware');
+
 
 router.post('/userSignup', async (req, res) => {
     try {

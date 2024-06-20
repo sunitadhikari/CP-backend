@@ -1,8 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const Room = require('../models/roomModel');
+const verifyToken=require('../middleware');
 
-router.post('/postRoom', async (req, res) => {
+
+router.post('/postRoom',verifyToken, async (req, res) => {
     try {
         const room = new Room(req.body);
         await room.save();
