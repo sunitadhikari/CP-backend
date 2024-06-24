@@ -7,7 +7,7 @@ router.post('/postAppointment', async (req, res) => {
         const appointmnet = new appointments(req.body);
         await appointmnet.save();
         // res.stauts(201).send(appointment);
-        res.json({message:'appointment is send'})
+        res.json({ message: 'appointment is send' })
         console.log('appointmet is saved');
     }
     catch (error) {
@@ -21,7 +21,7 @@ router.get('/getAppointment', async (req, res) => {
         res.send(appointment)
     }
     catch (error) {
-    res.status(400).send(error);
+        res.status(400).send(error);
     }
 })
 module.exports = router;

@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const appointmentSchema = new mongoose.Schema({
     username: { type: String, required: true },
+    doctorName:{type:String},
     email: { type: String, required: true, unique: true },
     specialist: {
         type: String, required: true, enum: ["Neurology",
@@ -37,7 +38,8 @@ const appointmentSchema = new mongoose.Schema({
     phone: { type: Number, require: true },
     date: {type: String, require:true},
     problem:{type: String, require:true},
-    time:{type:String, require:true}
+    time:{type:String, require:true},
+    status:{type:String, enum:['completed','cancelled', 'pending']},
 })
 
 const Appointments= mongoose.model('appointment', appointmentSchema);
