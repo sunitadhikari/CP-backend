@@ -10,6 +10,8 @@ const bedRoute = require('./routes/bedRoute')
 const patientRoutes = require('./routes/patientRoutes')
 const emailRoutes = require('./routes/emailRoutes')
 const symptoms = require('./routes/symptomsRoute')
+const appointment = require('./routes/appointmentRoute')
+const lab = require('./routes/labRoutes')
 
 app.use(express.json())
 app.use(cors());
@@ -21,6 +23,10 @@ app.use(patientRoutes);
 app.use(bedRoute);
 app.use(emailRoutes);
 app.use(symptoms);
+app.use(appointment);
+app.use(lab);
+
+
 
 
 app.listen(3000, () => {
