@@ -1,13 +1,13 @@
 const express = require("express")
 const router = express.Router()
 const jwt = require('jsonwebtoken')
-const user = require('../models/userModel');
+const User = require('../models/userModel');
 const verifyToken=require('../middleware');
 
 
 router.post('/userSignup', async (req, res) => {
     try {
-        const newUser = new user({
+        const newUser = new User({
             firstName: req.body.firstName,
             lastName: req.body.lastName,
             phone: req.body.phone,
@@ -31,7 +31,7 @@ router.post('/userSignup', async (req, res) => {
 
 
 router.get('/register', (req, res) => {
-    user.find()
+    User.find()
         .then(data => res.send(data))
         .catch(err => console.log(err))
 })
@@ -39,7 +39,7 @@ router.get('/register', (req, res) => {
 
 router.post('/postLogin', async (req, res) => {
     const { email, password } = req.body;
-    const findUser = await user.findOne({ email });
+    const findUser = await User.findOne({ email });
     if (!findUser) {
         // console.log(error);
         return res.json({ message: 'username not found' })
@@ -55,4 +55,21 @@ router.post('/postLogin', async (req, res) => {
 
 
 })
+
+
+router.get('/getusersdatabyEmail', verifyToken, async (req, res) =>{
+    try{
+            const { email } = req.user;
+            const userdata= await User.findOne({email});
+            if(userdata){
+                return res.json({ data: userdata });
+            }
+            else{
+                res.status(404).json({message: "data not found"});
+            }
+    }catch(error)
+    {
+        res.status(500).json({ messgae: 'something is error', error });
+    }
+  })
 module.exports = router;
