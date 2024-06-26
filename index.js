@@ -12,6 +12,7 @@ const emailRoutes = require('./routes/emailRoutes')
 const symptoms = require('./routes/symptomsRoute')
 const appointment = require('./routes/appointmentRoute')
 const lab = require('./routes/labRoutes')
+const appoitntmentHistory = require('./routes/appointment-historyRoute')
 
 app.use(express.json())
 app.use(cors());
@@ -25,6 +26,7 @@ app.use(emailRoutes);
 app.use(symptoms);
 app.use(appointment);
 app.use(lab);
+app.use(appoitntmentHistory);
 
 
 

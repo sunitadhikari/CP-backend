@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const appointmentSchema = new mongoose.Schema({
     username: { type: String, required: true },
     doctorName:{type:String},
-    email: { type: String, required: true},
+    email: { type: String},
     specialist: {
         type: String, required: true, enum: ["Neurology",
             "Radiotherapy",

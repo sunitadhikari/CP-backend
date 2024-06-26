@@ -5,19 +5,38 @@ const Signup= require('../models/userModel');
 const verifyToken = require('../middleware');
 
 
-router.post('/postAppointment', async (req, res) => {
+router.post('/postAppointment', verifyToken, async (req, res) => {
     try {
-        const appointmnet = new appointments(req.body);
-        await appointmnet.save();
-        // res.stauts(201).send(appointment);
-        res.json({ message: 'appointment is send' })
-        console.log('appointmet is saved');
+        // Ensure the email is added to the appointment data
+        const appointmentData = {
+            ...req.body,
+            email: req.user.email
+        };
+
+        // Create and save the appointment
+        const appointment = new appointments(appointmentData);
+        await appointment.save();
+        console.log('Appointment is saved');
+
+        // Retrieve all appointments for the user's email
+        const userAppointments = await appointments.find({ email: req.user.email });
+
+        if (!userAppointments.length) {
+            return res.status(404).json({ message: 'No appointments found for this user' });
+        }
+
+        // Respond with the saved appointment and all user's appointments
+        res.json({
+            message: 'Appointment is saved',
+            appointment,
+            userAppointments
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(400).json({ message: 'Error saving appointment', error });
     }
-    catch (error) {
-        res.status(400).send(error);
-    }
-}
-);
+});
+
 router.get('/getAppointment', async (req, res) => {
     try {
         const appointment = await appointments.find();
@@ -29,11 +48,11 @@ router.get('/getAppointment', async (req, res) => {
 });
 router.get('/appointmentsByEmail', verifyToken, async (req, res) => {
     try {
-        const email = req.user.email; 
+        const email = req.user.email; // Ensure the token contains the email
 
         const userAppointments = await appointments.find({ email });
 
-        if (!userAppointments.length) { 
+        if (!userAppointments) { 
             return res.status(404).json({ message: 'No appointments found for this user' });
         }
 
@@ -43,4 +62,5 @@ router.get('/appointmentsByEmail', verifyToken, async (req, res) => {
         res.status(500).json({ message: 'Internal server error' });
     }
 });
+
 module.exports = router;
