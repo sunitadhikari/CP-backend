@@ -1,6 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const appointments = require('../models/appointmentModel');
+const Signup= require('../models/userModel');
+const verifyToken = require('../middleware');
+
 
 router.post('/postAppointment', async (req, res) => {
     try {
@@ -23,5 +26,21 @@ router.get('/getAppointment', async (req, res) => {
     catch (error) {
         res.status(400).send(error);
     }
-})
+});
+router.get('/appointmentsByEmail', verifyToken, async (req, res) => {
+    try {
+        const email = req.user.email; 
+
+        const userAppointments = await appointments.find({ email });
+
+        if (!userAppointments.length) { 
+            return res.status(404).json({ message: 'No appointments found for this user' });
+        }
+
+        res.json({ userAppointments });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
 module.exports = router;
