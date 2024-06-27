@@ -25,7 +25,7 @@ router.get('/getSchedule', async(req, res)=>{
 
 
   //to get doctorschedule on doctor's profile
-  router.get('/getschedulebyDoctor', verifyToken, async (req, res) =>{
+  router.get('/getschedulebyEmail', verifyToken, async (req, res) =>{
     
     try{
        

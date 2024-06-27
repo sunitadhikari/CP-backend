@@ -8,4 +8,4 @@ const doctorNoteSchema = new mongoose.Schema({
 })
 
 const note = mongoose.model('doctorNote', doctorNoteSchema);
-module.exports = note;
+module.exports = note;   

@@ -1,11 +1,11 @@
 const mongoose = require('mongoose')
 const scheduleSchema = new mongoose.Schema({
-    doctorName:{type:String, require:true},
-    availableDays:{type:String, require:true},
-    startTime:{type:String, require:true},
-    endTime:{type:String, require:true},
-    mobileNumber:{type:Number, require:true},
-    sex:{type: String, require: true} 
+    doctorName:{type:String},
+    availableDays:{type:String},
+    startTime:{type:String},
+    endTime:{type:String},
+    mobileNumber:{type:Number},
+    sex:{type: String} 
 })
 const schedule = mongoose.model('schedule', scheduleSchema);
 module.exports = schedule;
