@@ -58,7 +58,8 @@ router.get('/getSymptomsbyEmail', verifyToken, async (req, res) =>{
         else{
             res.status(404).json({message: "data not found"});
         }
-    }catch(error)
+    }
+    catch(error)
     {
         res.status(500).json({ messgae: 'something is error', error });
     }

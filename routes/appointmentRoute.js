@@ -45,6 +45,9 @@ router.get('/getAppointment', async (req, res) => {
     catch (error) {
         res.status(400).send(error);
     }
+
+   
+
 });
 router.get('/appointmentsByEmail', verifyToken, async (req, res) => {
     try {
