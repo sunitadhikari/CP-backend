@@ -8,7 +8,7 @@ router.post('/addDoctornote',verifyToken, async (req, res) => {
     try {
         const { email } = req.user;
         const { patient, date, content }= req.body;
-      const note = new doctorNote({
+        const note = new doctorNote({
         patient,
         doctor: email,
         date,
@@ -25,6 +25,9 @@ router.post('/addDoctornote',verifyToken, async (req, res) => {
   router.get('/getDoctornote',verifyToken, async (req, res) => {
     try {
       const note = await doctorNote.find();
+      if(!note){
+        res.send("Data not found.");
+      }
       res.send({message:"Doctor note fetched!",DoctorNotes: note});
     } catch (error) {
         res.status(500).send({message:"Something error occurred!",error:error.message});

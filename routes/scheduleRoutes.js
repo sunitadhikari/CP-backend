@@ -87,7 +87,7 @@ router.get('/getSchedule', async(req, res)=>{
     try {
         const { doctorName, availableDays, startTime, endTime, mobileNumber, sex  }=req.body;
 
-      const schedul = await schedule.findByIdAndUpdate(req.params.id, { doctorName, availableDays, startTime, endTime, mobileNumber, sex });
+      const schedul = await schedule.findByIdAndUpdate(req.params.id, { doctorName, availableDays, startTime, endTime, mobileNumber, sex }, { new: true });
       if (!schedul) {
         return res.status(404).send({message:"Schedule not found"});
       }

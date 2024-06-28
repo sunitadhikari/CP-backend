@@ -82,4 +82,42 @@ router.get('/getusersdatabyEmail', verifyToken, async (req, res) =>{
         res.status(500).json({ messgae: 'something is error', error });
     }
   })
+
+  router.put('/updateuser/:id',verifyToken, async (req, res) => {
+    try {
+        const { firstName, lastName, phoneNo }=req.body;
+
+      const user = await User.findByIdAndUpdate(req.params.id, { firstName, lastName, phoneNo }, { new: true });
+      if (!user) {
+        return res.status(404).send({message:"Schedule not found"});
+      }
+      res.send({message:"schedule updated successfully",user});
+    } catch (error) {
+      res.status(500).send(error);
+    }
+  });
+
+  router.put('/changepassword/:id',verifyToken, async (req, res) => {
+    try {
+        const { oldpassword, password, confirmPassword }=req.body;
+        const pass = await User.findbyId(req.params.id);
+        if(pass.password!= pass.confirmPassword != oldpassword){
+            res.status(404).send("old Password doesn't match");
+        }
+        else{
+            if(password != confirmPassword){
+                res.status(404).send("New Password doesn't match");
+            }
+            const user = await User.findByIdAndUpdate(req.params.id, { password, confirmPassword }, { new: true });
+            if (!user) {
+            return res.status(404).send({message:"Schedule not found"});
+           }
+           res.send({message:"schedule updated successfully",user});
+        }
+      
+    } catch (error) {
+      res.status(500).send(error);
+    }
+  });
+
 module.exports = router;
