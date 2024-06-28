@@ -7,5 +7,5 @@ const doctorNoteSchema = new mongoose.Schema({
    content:{ type:String }
 })
 
-const note = mongoose.model('doctorNote', doctorNoteSchema);
-module.exports = note;   
+const doctorNote = mongoose.model('doctorNote', doctorNoteSchema);
+module.exports = doctorNote;   

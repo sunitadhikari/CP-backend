@@ -22,20 +22,20 @@ router.post('/addDoctornote',verifyToken, async (req, res) => {
     }
   });
   
-  router.get('/getDoctornote',verifyToken, async (req, res) => {
+  router.get('/getallnotes',verifyToken, async (req, res) => {
     try {
-      const note = await doctorNote.find();
-      if(!note){
-        res.send("Data not found.");
+        const notes = await doctorNote.find();
+      if(!notes || notes.length === 0){
+        return res.status(404).send("Data not found.");
       }
-      res.send({message:"Doctor note fetched!",DoctorNotes: note});
+      res.status(200).send({message:"Doctor note fetched!",Notes: notes});
     } catch (error) {
         res.status(500).send({message:"Something error occurred!",error:error.message});
     }
   });
 
   //to get doctornote on doctor's profile
-router.get('/getDoctornotebyEmail', verifyToken, async (req, res) =>{
+router.get('/getnotebyEmail', verifyToken, async (req, res) =>{
     
     try{
        
@@ -57,8 +57,8 @@ router.get('/getDoctornotebyEmail', verifyToken, async (req, res) =>{
                 const sentto = await Signup.findOne({ email: nt.patient });
                 return {
                     ...nt._doc,
-                    doctor: user.firstName,
-                    patient: sentto.firstName
+                    doctor: user.firstName + " " + user.lastName,
+                    patient: sentto.firstName + " " + sentto.lastName
                 };
             }));  
              res.status(200).json({ message:"Doctor notes to doctor themself:",data: noteByName });
@@ -74,7 +74,7 @@ router.get('/getDoctornotebyEmail', verifyToken, async (req, res) =>{
 
 
   //to get doctornote on patient's profile
-  router.get('/getDoctornotebyDoctor', verifyToken, async (req, res) =>{
+  router.get('/getNotesByPatient', verifyToken, async (req, res) =>{
     
     try{
        
@@ -96,8 +96,8 @@ router.get('/getDoctornotebyEmail', verifyToken, async (req, res) =>{
                 const sentby = await Signup.findOne({ email: nt.doctor });
                 return {
                     ...nt._doc,
-                    patient: user.firstName,
-                    doctor: sentby.firstName
+                    patient: user.firstName + " " + user.lastName,
+                    doctor: sentby.firstName + " " + sentby.lastName
                 };
             }));  
              res.status(200).json({ message:"Doctor notes to patients:",data: noteByName });
@@ -110,5 +110,34 @@ router.get('/getDoctornotebyEmail', verifyToken, async (req, res) =>{
         res.status(500).json({ messgae: 'something is error', error:error.message });
     }
   })
+
+
+  
+  router.put('/updatenote/:id',verifyToken, async (req, res) => {
+    try {
+        const { patient, content, date }=req.body;
+
+      const notes = await doctorNote.findByIdAndUpdate(req.params.id, { patient, content, date }, { new: true });
+      if (!notes) {
+        return res.status(404).send({message:"Schedule not found"});
+      }
+      res.send({message:"Notes updated successfully",notes});
+    } catch (error) {
+      res.status(500).send(error);
+    }
+  });
+
+
+  router.delete('/delnotes/:id',verifyToken, async (req, res) => {
+    try {
+      const notes = await doctorNote.findByIdAndDelete(req.params.id);
+      if (!notes) {
+        return res.status(404).send({message:"Note not found"});
+      }
+      res.send({message:"notes Deleted successfully",notes});
+    } catch (error) {
+      res.status(500).send(error);
+    }
+  });
 
   module.exports = router;
