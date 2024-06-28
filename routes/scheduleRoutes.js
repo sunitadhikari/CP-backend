@@ -61,25 +61,54 @@ router.get('/getSchedule', async(req, res)=>{
     
     try{
         const schedul= await schedule.find();
-        if(schedul){
+        if(schedul.length>0){
             
             const scheduleByName = await Promise.all(schedul.map(async sc => {
-                
-                const doctor = await Signup.findOne({ firstName: sc.doctorName  });
+                const [firstName, lastName] = sc.doctorName.split(' ');
+                const doctor = await Signup.findOne({ firstName, lastName });
                 return {
                     ...sc._doc,
-                    doctorName: doctor.firstName
+                    doctorName: doctor.firstName + " " + doctor.lastName
                 };
+       
             }));  
-             res.status(200).json({ message:"Doctor schedules to patients:",data: scheduleByName });
+            res.status(200).json({ message:"Doctor schedules to patients:",data: scheduleByName });
         }
-        else{
-            res.status(404).json({message: "data not found"});
-        }
+        
     }catch(error)
     {
-        res.status(500).json({ messgae: 'something is error', error:error.message });
+        res.status(500).json({ message: 'something is error', error:error.message });
     }
   });
+
+
+
+  router.put('/updateschedule/:id',verifyToken, async (req, res) => {
+    try {
+        const { doctorName, availableDays, startTime, endTime, mobileNumber, sex  }=req.body;
+
+      const schedul = await schedule.findByIdAndUpdate(req.params.id, { doctorName, availableDays, startTime, endTime, mobileNumber, sex });
+      if (!schedul) {
+        return res.status(404).send({message:"Schedule not found"});
+      }
+      res.send({message:"schedule updated successfully",schedul});
+    } catch (error) {
+      res.status(500).send(error);
+    }
+  });
+
+
+  router.delete('/delschedule/:id',verifyToken, async (req, res) => {
+    try {
+      const schedul = await schedule.findByIdAndDelete(req.params.id);
+      if (!schedul) {
+        return res.status(404).send({message:"Schedule not found"});
+      }
+      res.send({message:"schedule Deleted successfully",schedul});
+    } catch (error) {
+      res.status(500).send(error);
+    }
+  });
+
 
 module.exports = router;
