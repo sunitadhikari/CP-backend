@@ -60,16 +60,15 @@ router.get('/getSchedule', async(req, res)=>{
   router.get('/getschedulebyPatient', verifyToken, async (req, res) =>{
     
     try{
-        const schedul= await doctorNote.find({doctorName});
-        
+        const schedul= await schedule.find();
         if(schedul){
             
             const scheduleByName = await Promise.all(schedul.map(async sc => {
                 
-                const doctor = await Signup.findOne({ name: sc.doctorName });
+                const doctor = await Signup.findOne({ firstName: sc.doctorName  });
                 return {
-                    ...nt._doc,
-                    doctorName: doctor.firstName + doctor.lastName
+                    ...sc._doc,
+                    doctorName: doctor.firstName
                 };
             }));  
              res.status(200).json({ message:"Doctor schedules to patients:",data: scheduleByName });
