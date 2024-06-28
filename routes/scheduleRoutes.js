@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const schedule = require('../models/scheduleModel');
+const verifyToken=require('../middleware');
 const Signup=require('../models/userModel');
 
 router.post('/postSchedule', async(req, res)=>{
@@ -25,7 +26,7 @@ router.get('/getSchedule', async(req, res)=>{
 
 
   //to get doctorschedule on doctor's profile
-  router.get('/getschedulebyEmail', verifyToken, async (req, res) =>{
+  router.get('/getschedulebyDoctor', verifyToken, async (req, res) =>{
     
     try{
        
@@ -56,7 +57,7 @@ router.get('/getSchedule', async(req, res)=>{
 
   
   //to get doctor schedule on patient's profile
-  router.get('/getschedulebyDoctor', verifyToken, async (req, res) =>{
+  router.get('/getschedulebyPatient', verifyToken, async (req, res) =>{
     
     try{
         const schedul= await doctorNote.find({doctorName});
