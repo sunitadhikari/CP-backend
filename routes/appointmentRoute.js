@@ -19,11 +19,11 @@ router.post('/postAppointment', verifyToken, async (req, res) => {
         console.log('Appointment is saved');
 
         // Retrieve all appointments for the user's email
-        const userAppointments = await appointments.find({ email: req.user.email });
+        // const userAppointments = await appointments.find({ email: req.user.email });
 
-        if (!userAppointments.length) {
-            return res.status(404).json({ message: 'No appointments found for this user' });
-        }
+        // if (!userAppointments.length) {
+        //     return res.status(404).json({ message: 'No appointments found for this user' });
+        // }
 
         // Respond with the saved appointment and all user's appointments
         res.json({
@@ -65,5 +65,13 @@ router.get('/appointmentsByEmail', verifyToken, async (req, res) => {
         res.status(500).json({ message: 'Internal server error' });
     }
 });
-
+router.get('/getAppointmentsByDoctorEmail', verifyToken, async (req, res) => {
+    try {
+        const doctorEmail = req.user.email; // Assuming doctor's email is in req.user.email
+        const appointments = await Appointment.find({ email: doctorEmail });
+        res.json(appointments);
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching appointments', error });
+    }
+});
 module.exports = router;

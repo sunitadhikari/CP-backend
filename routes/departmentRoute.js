@@ -47,7 +47,7 @@ router.patch('/patchDepartment:id',verifyToken, async (req, res) => {
   }
 });
 
-router.delete('/delDepartment:id',verifyToken, async (req, res) => {
+router.delete('/delDepartment/:id',verifyToken, async (req, res) => {
   try {
     const department = await Department.findByIdAndDelete(req.params.id);
     if (!department) {

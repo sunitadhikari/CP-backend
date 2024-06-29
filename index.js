@@ -15,6 +15,9 @@ const lab = require('./routes/labRoutes')
 const schedule = require('./routes/scheduleRoutes')
 const appoitntmentHistory = require('./routes/appointment-historyRoute')
 const note = require('./routes/doctornoteRoute')
+const prescriptionRoute = require('./routes/prescriptionRoute')
+const doctorDischargeReportRoute = require('./routes/doctorDischargeReportRoute')
+const hospitalDischargeReportRoute = require('./routes/hospitalDischargeReportRoute')
 
 app.use(express.json())
 app.use(cors());
@@ -30,6 +33,9 @@ app.use(appointment);
 app.use(lab);
 app.use(appoitntmentHistory);
 app.use(schedule);
+app.use(hospitalDischargeReportRoute);
+app.use(doctorDischargeReportRoute);
+app.use(prescriptionRoute);
 app.use(note);
 
 
