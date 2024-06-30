@@ -26,33 +26,27 @@ router.get('/getSchedule', async(req, res)=>{
 
 
   //to get doctorschedule on doctor's profile
-  router.get('/getschedulebyDoctor', verifyToken, async (req, res) =>{
-    
-    try{
-       
+  router.get('/getschedulebyDoctor', verifyToken, async (req, res) => {
+    try {
         const { email } = req.user;
-            
+        
         const user = await Signup.findOne({ email });
         
-        // If the user is not found, handle the error
-    if (!user) {
-        return res.status(404).json({ message: 'User not found' });
-    }
-   
-        const schedul= await schedule.find({doctorName: user.name});
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
         
-        if(schedul){
-             res.status(200).json({ message:"Doctor schedule to doctors:",data: schedul });
+        const schedules = await schedule.find({ doctorName: user.name });
+        
+        if (schedules && schedules.length > 0) {
+            res.status(200).json({ message: "Doctor schedule for doctor:", data: schedules });
+        } else {
+            res.status(404).json({ message: "No schedule found for this doctor" });
         }
-        else{
-            res.status(404).json({message: "data not found"});
-        }
-    }catch(error)
-    {
-        res.status(500).json({ messgae: 'something is error', error:error.message });
+    } catch (error) {
+        res.status(500).json({ message: 'Something went wrong', error: error.message });
     }
-  });
-
+});
 
 
   

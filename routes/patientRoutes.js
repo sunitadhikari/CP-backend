@@ -44,15 +44,20 @@ router.patch('/patchPatient:id', verifyToken, async (req, res) => {
     }
 });
 
-router.delete('/delPatient:id', verifyToken, async (req, res) => {
+router.delete('/delPatient/:id', verifyToken, async (req, res) => {
+    const id = req.params.id;
     try {
-        await res.person.remove();
+        const person = await Person.findByIdAndDelete(id);
+        
+        if (!person) {
+            return res.status(404).json({ message: 'Person not found' });
+        }
+        
         res.json({ message: 'Deleted person' });
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
 });
-
 
 
 module.exports = router;

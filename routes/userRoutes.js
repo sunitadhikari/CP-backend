@@ -46,12 +46,36 @@ router.get('/register', (req, res) => {
         .catch(err => console.log(err))
 })
 
-
+router.get('/getDoctors', async (req, res) => {
+    try {
+      const doctors = await User.find({ role: 'doctor' });
+      res.status(200).json({ doctors: doctors });
+    } catch (error) {
+      res.status(500).json({ message: 'Error fetching doctors', error });
+    }
+  });
+  
+  router.get('/getPatients', async (req, res) => {
+    try {
+      const patients = await User.find({ role: 'patient' });
+      res.status(200).json(patients);
+    } catch (error) {
+      res.status(500).json({ message: 'Error fetching patients', error });
+    }
+  });
+  
+  router.get('/getLabtecs', async (req, res) => {
+    try {
+      const labtecs = await User.find({ role: 'labtec' });
+      res.status(200).json({labtecs: labtecs});
+    } catch (error) {
+      res.status(500).json({ message: 'Error fetching lab technicians', error });
+    }
+  });
 router.post('/postLogin', async (req, res) => {
     const { email, password } = req.body;
     const findUser = await User.findOne({ email });
     if (!findUser) {
-        // console.log(error);
         return res.json({ message: 'username not found' })
     }
     const isPasswordMatch = password === findUser.password;

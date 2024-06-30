@@ -1,13 +1,34 @@
 const express = require('express');
 const router = express.Router();
 const Bed = require('../models/bedModel');
+const Room = require('../models/roomModel');
 const verifyToken=require('../middleware');
 
 
-// Create a bed
-router.post('/postBed',verifyToken, async (req, res) => {
+router.post('/postBed', verifyToken, async (req, res) => {
     try {
-        const bed = new Bed(req.body);
+        const { name, bedNumber } = req.body;
+
+        const room = await Room.findOne({ name });
+
+        if (!room) {
+            return res.status(404).json({ message: `Room with name '${name}' not found` });
+        }
+
+        if (bedNumber > room.bedCapacity) {
+            return res.status(400).json({ message: `Bed number ${bedNumber} exceeds the bed capacity of room '${name}' (${room.bedCapacity})` });
+        }
+
+        // Create new bed
+        const bed = new Bed({
+            name,
+            bedNumber,
+            description: req.body.description,
+            charge: req.body.charge,
+            status: req.body.status
+        });
+
+        // Save bed to database
         await bed.save();
         res.status(201).json(bed);
     } catch (err) {
@@ -26,12 +47,12 @@ router.get('/getBed',verifyToken, async (req, res) => {
 });
 
 // Get one bed
-router.get('getBedById/:id',verifyToken, getBed, (req, res) => {
+router.get('/getBedById/:id',verifyToken, getBed, (req, res) => {
     res.json(res.bed);
 });
 
 // Update one bed
-router.patch('patchBed/:id',verifyToken, getBed, async (req, res) => {
+router.patch('/patchBed/:id',verifyToken, getBed, async (req, res) => {
     if (req.body.name != null) {
         res.bed.name = req.body.name;
     }
@@ -59,16 +80,20 @@ router.patch('patchBed/:id',verifyToken, getBed, async (req, res) => {
     }
 });
 
-// Delete one bed
-router.delete('delBed/:id', getBed, async (req, res) => {
+router.delete('/delBed/:id', async (req, res) => {
+    const id = req.params.id;
     try {
-        await res.bed.remove();
+        const bed = await Bed.findByIdAndDelete(id);
+        
+        if (!bed) {
+            return res.status(404).json({ message: 'Bed not found' });
+        }
+        
         res.json({ message: 'Deleted Bed' });
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
 });
-
 async function getBed(req, res, next) {
     let bed;
     try {
