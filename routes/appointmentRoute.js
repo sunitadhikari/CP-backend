@@ -17,7 +17,8 @@ router.post('/postAppointment', verifyToken, async (req, res) => {
         date,
         time,
         phone,
-        problem
+        problem,
+        isPaid: false
       });
     
       try {
@@ -51,6 +52,25 @@ router.get('/appointmentsByEmail', verifyToken, async (req, res) => {
         console.log(error);
         res.status(500).json({ message: 'Internal server error' });
     }
+});
+router.post('/updatePaymentStatus', verifyToken, async (req, res) => {
+  const { id, payload } = req.body;
+
+  try {
+    const appointment = await Appointments.findById(id);
+
+    if (!appointment) {
+      return res.status(404).json({ message: 'Appointment not found' });
+    }
+
+    appointment.isPaid = true;
+    appointment.paymentDetails = payload; // Optionally save payment details
+
+    const updatedAppointment = await appointment.save();
+    res.status(200).json(updatedAppointment);
+  } catch (error) {
+    res.status(500).json({ message: 'Error updating payment status', error });
+  }
 });
 router.get('/appointment', verifyToken, async (req, res) => {
     try {
