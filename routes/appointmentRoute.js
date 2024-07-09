@@ -97,4 +97,16 @@ router.get('/docAppointmentsEmail', verifyToken, async (req, res) => {
   }
 });
 
+router.delete('/delAppointment/:id', verifyToken, async(req,res)=>{
+  try{
+    const appointment = await appointments.findById(req.params.id);
+    if(!appointment){
+      return res.status(404).send();
+    }
+    res.status(appointment);
+  }
+  catch(error){
+    res.status(500).send(error);
+  }
+})
 module.exports = router;
