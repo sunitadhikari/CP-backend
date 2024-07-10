@@ -28,7 +28,15 @@ router.post('/postAppointment', verifyToken, async (req, res) => {
         res.status(400).json({ message: err.message });
       }
     });
-    
+    router.get('/paidAppointments', verifyToken, async (req, res) => {
+      try {
+        const paidAppointments = await appointments.find({ isPaid: true });
+        res.status(200).json(paidAppointments);
+      } catch (error) {
+        console.error('Error fetching paid appointments:', error); 
+        res.status(500).json({ message: 'Error fetching paid appointments', error });
+      }
+    });
     router.get('/appointments', async (req, res) => {
       try {
         const appointmentList = await appointments.find();
