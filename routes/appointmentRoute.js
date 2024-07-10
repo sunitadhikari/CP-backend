@@ -57,7 +57,7 @@ router.post('/updatePaymentStatus', verifyToken, async (req, res) => {
   const { id, payload } = req.body;
 
   try {
-    const appointment = await Appointments.findById(id);
+    const appointment = await appointments.findById(id);
 
     if (!appointment) {
       return res.status(404).json({ message: 'Appointment not found' });
@@ -69,9 +69,11 @@ router.post('/updatePaymentStatus', verifyToken, async (req, res) => {
     const updatedAppointment = await appointment.save();
     res.status(200).json(updatedAppointment);
   } catch (error) {
+    console.error('Error updating payment status:', error); // Log the full error
     res.status(500).json({ message: 'Error updating payment status', error });
   }
 });
+
 router.get('/appointment', verifyToken, async (req, res) => {
     try {
         const doctorEmail = req.user.email; // Assuming doctor's email is in req.user.email
