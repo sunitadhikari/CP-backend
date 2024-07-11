@@ -100,7 +100,7 @@ router.get('/getDoctors', async (req, res) => {
 
 
 // })
-
+///
 router.post('/signin', async (req, res) => {
   try {
       const { email, password } = req.body;
