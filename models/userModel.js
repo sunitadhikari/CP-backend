@@ -20,8 +20,6 @@ const userSchema = new mongoose.Schema({
     password: { type: String },
     confirmPassword: { type: String },
     termCondition: { type: Boolean },
-    registereddate:{ type: String },
-    isVerified:{ type:Boolean, required:true },
     role: {
         type: String,
         enum: ["doctor", "patient", "admin", "labtec"],
