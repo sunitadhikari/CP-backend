@@ -38,6 +38,15 @@ router.post('/userSignup', async (req, res) => {
         console.log(error);
     }
 })
+router.get('/getDoctorsByDepartment/:department', async (req, res) => {
+  const department = req.params.department;
+  try {
+    const doctors = await Doctors.find({ department });
+    res.status(200).json(doctors.map(doctor => doctor.name));
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching doctors', error });
+  }
+});
 
 
 router.get('/register', (req, res) => {

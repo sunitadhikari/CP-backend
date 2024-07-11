@@ -17,7 +17,8 @@ router.post('/postAppointment', verifyToken, async (req, res) => {
         date,
         time,
         phone,
-        problem
+        problem,
+        isPaid: false
       });
     
       try {
@@ -27,7 +28,15 @@ router.post('/postAppointment', verifyToken, async (req, res) => {
         res.status(400).json({ message: err.message });
       }
     });
-    
+    router.get('/paidAppointments', verifyToken, async (req, res) => {
+      try {
+        const paidAppointments = await appointments.find({ isPaid: true });
+        res.status(200).json(paidAppointments);
+      } catch (error) {
+        console.error('Error fetching paid appointments:', error); 
+        res.status(500).json({ message: 'Error fetching paid appointments', error });
+      }
+    });
     router.get('/appointments', async (req, res) => {
       try {
         const appointmentList = await appointments.find();
@@ -52,6 +61,27 @@ router.get('/appointmentsByEmail', verifyToken, async (req, res) => {
         res.status(500).json({ message: 'Internal server error' });
     }
 });
+router.post('/updatePaymentStatus', verifyToken, async (req, res) => {
+  const { id, payload } = req.body;
+
+  try {
+    const appointment = await appointments.findById(id);
+
+    if (!appointment) {
+      return res.status(404).json({ message: 'Appointment not found' });
+    }
+
+    appointment.isPaid = true;
+    appointment.paymentDetails = payload; // Optionally save payment details
+
+    const updatedAppointment = await appointment.save();
+    res.status(200).json(updatedAppointment);
+  } catch (error) {
+    console.error('Error updating payment status:', error); // Log the full error
+    res.status(500).json({ message: 'Error updating payment status', error });
+  }
+});
+
 router.get('/appointment', verifyToken, async (req, res) => {
     try {
         const doctorEmail = req.user.email; // Assuming doctor's email is in req.user.email
@@ -161,4 +191,16 @@ router.get('/docAppointmentsEmail', verifyToken, async (req, res) => {
     }
   });
 
+router.delete('/delAppointment/:id', verifyToken, async(req,res)=>{
+  try{
+    const appointment = await appointments.findById(req.params.id);
+    if(!appointment){
+      return res.status(404).send();
+    }
+    res.status(appointment);
+  }
+  catch(error){
+    res.status(500).send(error);
+  }
+})
 module.exports = router;
