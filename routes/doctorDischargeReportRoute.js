@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const DoctorDischargeReport = require('../models/doctorDischargeReportModel');
+const verifyToken = require('../middleware');
 
 router.post('/doctorDischargeReport', async (req, res) => {
     try {
@@ -31,6 +32,7 @@ router.get('/doctorDischargeReport/:id', async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 });
+
 router.delete('/doctorDischargeReport/:id', async (req, res) => {
     try {
         const deletedReport = await DoctorDischargeReport.findByIdAndDelete(req.params.id);
@@ -56,5 +58,29 @@ router.put('/doctorDischargeReport/:id', async (req, res) => {
     }
 });
 
+//for patient by their email
+router.get('/getdoctorDischargeReportbyEmail', verifyToken, async(req,res)=>{
+    try{
+        const {email,firstName, lastName}=req.user;
+        const user=await Signup.findOne({email});
+        if(!user){
+            return res.status(404).send("User not found");
+        }
+        const report=await DoctorDischargeReport.find({patientName:email});
+        if(!report || report.length==0){
+            return res.status(404).send("No doctor discharge reports for this user");
+        }
+        const reportwithName = await Promise.all(report.map(async rt => {
+            return {
+                ...rt._doc,
+                patientName: firstName + " " + lastName
+            }
+        }
+    ));  
+       res.status(200).json(reportwithName);
+    }catch(error){
+        res.status(500).json({ message: "Internal server error!",error:error.message });
+    }
+})
 
 module.exports = router;
