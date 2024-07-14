@@ -3,7 +3,7 @@ const router = express.Router()
 const jwt = require('jsonwebtoken')
 const User = require('../models/userModel');
 const verifyToken=require('../middleware');
-
+const bcrypt=require('bcrypt');
 
 router.post('/userSignup', async (req, res) => {
     try {
@@ -81,24 +81,79 @@ router.get('/getDoctors', async (req, res) => {
       res.status(500).json({ message: 'Error fetching lab technicians', error });
     }
   });
-router.post('/postLogin', async (req, res) => {
-    const { email, password } = req.body;
-    const findUser = await User.findOne({ email });
-    if (!findUser) {
-        return res.json({ message: 'username not found' })
-    }
-    const isPasswordMatch = password === findUser.password;
-    if (!isPasswordMatch) {
-        console.log('password is incorrect');
-        return res.json({ message: 'Incorrect password' });
-    }
-    const userRole = findUser.role;
-    const token = jwt.sign({ email: findUser.email, userId: findUser._id , firstName: findUser.firstName , phone: findUser.phone}, 'secretKey');
-    res.json({ message: 'Login Sucessfull', role: userRole, token: token });
 
 
+// router.post('/postLogin', async (req, res) => {
+//     const { email, password } = req.body;
+//     const findUser = await User.findOne({ email });
+//     if (!findUser) {
+//         return res.json({ message: 'username not found' })
+//     }
+//     const isPasswordMatch = password === findUser.password;
+//     if (!isPasswordMatch) {
+//         console.log('password is incorrect');
+//         return res.json({ message: 'Incorrect password' });
+//     }
+//     const userRole = findUser.role;
+//     const token = jwt.sign({ email: findUser.email, userId: findUser._id , firstName: findUser.firstName , phone: findUser.phone}, 'secretKey');
+//     res.json({ message: 'Login Sucessfull', role: userRole, token: token });
+
+
+// })
+///
+// router.post('/signin', async (req, res) => {
+//   try {
+//       const { email, password } = req.body;
+//       const userData = await User.findOne({ email });
+//       if (!userData) {
+//           console.log(error);
+//           return res.json({ message: 'username is not found ' });
+//       }
+//       if(userData.isVerified !=true){
+//         return res.json({ message: 'User is not verified. Please verify before login! ',userData });
+//       }
+//       const userPasswordMatch = await bcrypt.compare(password, userData.password);
+//       if (!userPasswordMatch) {
+//           console.log('password doesnot match ');
+//           return res.json({ message: 'password is incorrect' });
+//       }
+//       const userRole = userData.role;
+//       const token = jwt.sign({ email: userData.email, userId: userData._id , firstName: userData.firstName , phoneNo: userData.phoneNo , userRole: userData.role }, 'secretKey');
+
+//       res.json({ message: 'Login Sucessfull', role: userRole, token: token });
+//   }
+//   catch (error) {
+//       res.json({ message: 'something went wrong', error });
+
+//   }
+// })
+
+router.post('/signin', async (req, res) => {
+  try {
+      const { email, password } = req.body;
+      const userData = await User.findOne({ email });
+      if (!userData) {
+          console.log(error);
+          return res.json({ message: 'username is not found ' });
+      }
+      if(userData.isVerified !=true){
+        return res.json({ message: 'User is not verified. Please verify before login! ',userData });
+      }
+      const userPasswordMatch = await bcrypt.compare(password, userData.password);
+      if (!userPasswordMatch) {
+          console.log('password doesnot match ');
+          return res.json({ message: 'password is incorrect' });
+      }
+      const userRole = userData.role;
+      const token = jwt.sign({ email: userData.email, userId: userData._id , firstName: userData.firstName , phoneNo: userData.phoneNo , userRole: userData.role }, 'secretKey');
+
+      res.json({ message: 'Login Sucessfull', role: userRole, token: token });
+  }
+  catch (error) {
+      res.json({ message: 'something went wrong', error });
+
+  }
 })
-
 
 router.get('/getusersdatabyEmail', verifyToken, async (req, res) =>{
     try{

@@ -24,7 +24,9 @@ const userSchema = new mongoose.Schema({
         type: String,
         enum: ["doctor", "patient", "admin", "labtec"],
         default: "patient"
-    }
+    },
+    isVerified:{type:Boolean, require:true},
+    registeredDate:{type:String}
 })
 const userHospital = mongoose.model('hospital', userSchema)
 module.exports = userHospital;
