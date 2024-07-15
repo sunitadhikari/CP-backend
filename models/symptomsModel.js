@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const symptomsSchema = mongoose.Schema({
     patient:{type:String},
-    doctor:{type:String},
+    // doctor:{type:String},
     symptoms:{type:String}
 })
 

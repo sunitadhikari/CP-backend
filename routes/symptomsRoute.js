@@ -7,8 +7,8 @@ const Signup = require('../models/userModel')
 router.post('/postSymptoms', verifyToken, async (req, res) => {
     try {
         const { email }= req.user;
-        const { doctor , symptoms } = req.body;
-        const symptom = new Symptoms({patient:email,doctor,symptoms});
+        const {  symptoms } = req.body;
+        const symptom = new Symptoms({patient:email,symptoms});
         await symptom.save();
         res.status(201).json(symptom);
     }
