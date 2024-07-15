@@ -1,14 +1,21 @@
+// models/Bed.js
+
 const mongoose = require('mongoose');
 
-const bedSchema = new mongoose.Schema({
-    name: { type: String, required: true },
-    bedNumber: { type: Number, required: true },
-    // bedCapacity: { type: Number, required: true },
-    description: { type: String },
-    charge:{type:Number},
-    status: { type: String, enum: ['Active', 'Inactive'], default: 'Active' }
+const BedSchema = new mongoose.Schema({
+    department: {
+        type: String,
+        required: true
+      },
+      bedNumbers: {
+        type: Number,
+        required: true
+      },
+      charges: {
+        type: Number,
+        default: 0 
+      }
+  
 });
 
-const Bed = mongoose.model('Bed', bedSchema);
-
-module.exports = Bed;
+module.exports = mongoose.model('Bed', BedSchema);
