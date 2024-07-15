@@ -217,5 +217,18 @@ router.post('/reset-password', async (req, res) => {
         return res.status(400).json({ message: 'Invalid or expired token', error });
     }
 });
+router.get('/users', verifyToken, async (req, res) => {
+    try {
+        const users = await userRegister.find();
+
+        if (!users || users.length === 0) {
+            return res.status(404).json({ message: 'No users found' });
+        }
+
+        return res.status(200).json(users);
+    } catch (error) {
+        return res.status(500).json({ message: 'Error fetching users', error: error.message });
+    }
+});
 
 module.exports = router;
