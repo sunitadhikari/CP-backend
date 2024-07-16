@@ -3,6 +3,8 @@
 const express = require('express');
 const router = express.Router();
 const Patient = require('../models/admissionPatientModel');
+const Signup = require('../models/userModel');
+const verifyToken=require('../middleware');
 
 router.get('/patients', async (req, res) => {
   try {
@@ -25,7 +27,7 @@ router.get('/patients/:id', async (req, res) => {
   }
 });
 
-router.post('/patients', async (req, res) => {
+router.post('/patients',verifyToken, async (req, res) => {
   try {
     const patient = new Patient(req.body);
     await patient.save();
@@ -66,5 +68,22 @@ router.delete('/patients/:id', async (req, res) => {
     res.status(400).json({ error: err.message });
   }
 });
+
+router.get('/admittedpatientbyDepartment', verifyToken, async(req,res)=>{
+  try{
+    const {email}=req.user;
+    const doctor = await Signup.findOne({email});
+    if(!doctor){
+      return res.status(404).send("Doctor not found!");
+    }
+    const patient = await Patient.find({department:doctor.department});
+    if(!patient){
+      return res.status(404).send("No patient found for this department");
+    }
+    res.status(200).json({message:`Patient for ${patient.department} department:`, patient});
+  }catch(error){
+    return res.status(500).send({message:"Internal Server error!",error:error.message});
+  }
+})
 
 module.exports = router;
