@@ -35,7 +35,7 @@ router.get('/getdepartment:id',verifyToken, async (req, res) => {
   }
 });
 
-router.patch('/patchDepartment:id',verifyToken, async (req, res) => {
+router.put('/putDepartment/:id', verifyToken, async (req, res) => {
   try {
     const department = await Department.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
     if (!department) {
