@@ -14,7 +14,11 @@ const BedSchema = new mongoose.Schema({
       charges: {
         type: Number,
         default: 0 
-      }
+      },
+      occupied: {
+        type: Boolean,
+        default: false
+    }
   
 });
 

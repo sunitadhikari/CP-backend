@@ -1,9 +1,8 @@
-// routes/beds.js
-
 const express = require('express');
 const router = express.Router();
-const Bed = require('../models/bedModel');
+const Bed = require('../models/bedModel')
 const Department = require('../models/departmentModel'); 
+const mongoose = require('mongoose'); 
 
 
 
@@ -16,14 +15,52 @@ router.get('/beds', async (req, res) => {
       res.status(400).json({ error: err.message });
     }
   });
+//   router.put('/beds/:id/update-occupied-status', async (req, res) => {
+//     const { id } = req.params;
+//     const { occupied } = req.body;
   
+//     try {
+//       if (!mongoose.Types.ObjectId.isValid(id)) {
+//         return res.status(404).json({ message: 'Invalid bed ID' });
+//       }
+  
+//       const updatedBed = await Bed.findByIdAndUpdate(id, { occupied }, { new: true });
+  
+//       if (!updatedBed) {
+//         return res.status(404).json({ message: 'Bed not found' });
+//       }
+  
+//       res.json(updatedBed);
+//     } catch (err) {
+//       console.error('Error updating bed status:', err);
+//       res.status(500).json({ error: 'Failed to update bed status' });
+//     }
+//   });
+router.put('/beds/:bedNumber/update-occupied-status', async (req, res) => {
+    const { bedNumber } = req.params;
+    const { occupied } = req.body;
+  
+    try {
+      const updatedBed = await Bed.findOneAndUpdate({ bedNumbers: bedNumber }, { occupied }, { new: true });
+  
+      if (!updatedBed) {
+        return res.status(404).json({ message: 'Bed not found' });
+      }
+  
+      res.json(updatedBed);
+    } catch (err) {
+      console.error('Error updating bed status:', err);
+      res.status(500).json({ error: 'Failed to update bed status' });
+    }
+  });
   router.post('/add-bed', (req, res) => {
-    const { department, bedNumbers, charges } = req.body;
+    const { department, bedNumbers, charges,occupied} = req.body;
     
     const newBed = new Bed({
       department,
       bedNumbers,
-      charges
+      charges,
+      occupied
     });
   
     newBed.save()
