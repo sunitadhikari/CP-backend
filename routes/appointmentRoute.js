@@ -14,8 +14,8 @@ router.post('/postAppointment', verifyToken, async (req, res) => {
         email,
         departmentName,
         doctorname,
-        date,
-        time,
+        // date,
+        // time,
         phone,
         problem,
         isPaid: false
