@@ -80,7 +80,7 @@ router.get('/admittedpatientbyDepartment', verifyToken, async(req,res)=>{
     if(!patient){
       return res.status(404).send("No patient found for this department");
     }
-    res.status(200).json({message:`Patient for ${patient.department} department:`, patient});
+    res.status(200).json({message:`Patient for this department:`, patient});
   }catch(error){
     return res.status(500).send({message:"Internal Server error!",error:error.message});
   }
