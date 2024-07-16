@@ -64,7 +64,7 @@ router.delete('/delDoctor/:id', verifyToken, async (req, res) => {
     const doctor = await Doctor.findByIdAndDelete(req.params.id);
 
     if (!doctor) {
-      return res.status(404).send();
+      return res.status(404).send({message:'Doctor not found'});
     }
 
     res.send(doctor);
