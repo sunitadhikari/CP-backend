@@ -46,7 +46,15 @@ router.put('/patients/:id', async (req, res) => {
     res.status(400).json({ error: err.message });
   }
 });
-
+// Get patients by department
+router.get('/patients/department/:department', async (req, res) => {
+  try {
+    const patients = await Patient.find({ department: req.params.department });
+    res.json(patients);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
 router.delete('/patients/:id', async (req, res) => {
   try {
     const patient = await Patient.findByIdAndDelete(req.params.id);
