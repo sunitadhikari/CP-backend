@@ -4,8 +4,8 @@ const appointmentSchema = new mongoose.Schema({
     email: { type: String},
     departmentName: { type: String, required: true },
   doctorname: { type: String, required: true },
-  date: { type: Date, required: true },
-  time: { type: String, required: true },
+  // date: { type: Date, required: true },
+  // time: { type: String, required: true },
   phone: { type: String, required: true },
   problem: { type: String, required: true },
   isPaid: { type: Boolean, default: false }
