@@ -37,9 +37,10 @@ router.post('/patients',verifyToken, async (req, res) => {
   }
 });
 
-router.put('/patients/:id', async (req, res) => {
+router.put('/patients/:id',verifyToken, async (req, res) => {
   try {
-    const patient = await Patient.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    const {email}=req.user;
+    const patient = await Patient.findByIdAndUpdate(req.params.id, {checkedBy:email}, { new: true });
     if (!patient) {
       return res.status(404).json({ message: 'Patient not found' });
     }
