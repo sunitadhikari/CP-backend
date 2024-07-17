@@ -21,6 +21,7 @@ const hospitalDischargeReportRoute = require('./routes/hospitalDischargeReportRo
 const userverification=require('./routes/userverification')
 const appPrescription=require('./routes/appPrescription.routes')
 const admissionPatientRoute=require('./routes/admissionPatientRoute')
+const wardRouted=require('./routes/wardRouted')
 
 app.use(express.json())
 app.use(cors());
@@ -43,6 +44,7 @@ app.use(note);
 app.use(userverification);
 app.use(appPrescription);
 app.use(admissionPatientRoute);
+app.use(wardRouted);
 
 
 

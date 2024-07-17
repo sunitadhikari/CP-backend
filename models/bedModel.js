@@ -3,7 +3,7 @@
 const mongoose = require('mongoose');
 
 const BedSchema = new mongoose.Schema({
-    department: {
+  ward: {
         type: String,
         required: true
       },
