@@ -1,5 +1,3 @@
-// models/patient.js
-
 const mongoose = require('mongoose');
 
 const patientSchema = new mongoose.Schema({
@@ -14,10 +12,9 @@ const patientSchema = new mongoose.Schema({
   bedNumber: { type: String },
   admittedAt: { type: Date, default: Date.now },
     dischargeDate: { type: Date },
-  isActive: { type: Boolean, default: true },
-  checkedBy:{type: String, required:true} //email of doctor
+  checkedBy:{type: String, required:true}
 });
 
-const Patient = mongoose.model('admissionPatient', patientSchema);
+const Patient = mongoose.model('patientCheck', patientSchema);
 
 module.exports = Patient;
