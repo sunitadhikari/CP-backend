@@ -15,7 +15,7 @@ const patientSchema = new mongoose.Schema({
   admittedAt: { type: Date, default: Date.now },
     dischargeDate: { type: Date },
   isActive: { type: Boolean, default: true },
-  checkedBy:{type: String, required:true}
+  checkedBy:{type: String, required:true} //email of doctor
 });
 
 const Patient = mongoose.model('admissionPatient', patientSchema);
