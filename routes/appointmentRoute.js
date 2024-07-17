@@ -14,7 +14,7 @@ router.post('/postAppointment', verifyToken, async (req, res) => {
         email,
         departmentName,
         doctorname,
-        // date,
+        date,
         // time,
         phone,
         problem,
@@ -108,34 +108,63 @@ router.get('/appointment', verifyToken, async (req, res) => {
 // });
 
 
-router.get('/docAppointmentsEmail', verifyToken, async (req, res) => {
-    try {
-      const doctorEmail = req.user.email; 
-      const user = await Signup.findOne({ email: doctorEmail });
-      if (!user) {
-        return res.status(404).json({ message: 'User not found' });
-      }
+// router.get('/docAppointmentsEmail', verifyToken, async (req, res) => {
+//     try {
+//       const doctorEmail = req.user.email; 
+//       const user = await Signup.findOne({ email: doctorEmail });
+//       if (!user) {
+//         return res.status(404).json({ message: 'User not found' });
+//       }
   
-      const appointmentList = await appointments.find({ doctorname: doctorEmail });
-      if(!appointmentList || appointmentList.length==0){
-          return res.status(404).send('No appointments for this doctor');
-      }
-      const appointmentwithName = await Promise.all(appointmentList.map(async appoint => {
+//       const appointmentList = await appointments.find({ doctorname: doctorEmail });
+//       if(!appointmentList || appointmentList.length==0){
+//           return res.status(404).send('No appointments for this doctor');
+//       }
+//       const appointmentwithName = await Promise.all(appointmentList.map(async appoint => {
               
-          const sentto = await Signup.findOne({ email: appoint.email });
-          return {
-              ...appoint._doc,
-              doctorname: user.firstName + " " + user.lastName,
-              username: sentto.firstName + " " + sentto.lastName
-          };
-      }));  
-      res.status(200).json({message:'Appointment for doctor',appointmentwithName});
-    } catch (error) {
-      console.error('Error fetching appointments:', error);
-      res.status(500).json({ message: 'Internal server error' });
+//           const sentto = await Signup.findOne({ email: appoint.email });
+//           return {
+//               ...appoint._doc,
+//               doctorname: user.firstName + " " + user.lastName,
+//               username: sentto.firstName + " " + sentto.lastName
+//           };
+//       }));  
+//       res.status(200).json({message:'Appointment for doctor',appointmentwithName});
+//     } catch (error) {
+//       console.error('Error fetching appointments:', error);
+//       res.status(500).json({ message: 'Internal server error' });
+//     }
+//   });
+router.get('/docAppointmentsEmail', verifyToken, async (req, res) => {
+  try {
+    const doctorEmail = req.user.email; 
+    const user = await Signup.findOne({ email: doctorEmail });
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
     }
-  });
-  
+
+    // Find appointments where the doctorname is doctorEmail and isPaid is true
+    const appointmentList = await appointments.find({ doctorname: doctorEmail, isPaid: true });
+    if (!appointmentList || appointmentList.length === 0) {
+      return res.status(404).send('No appointments for this doctor');
+    }
+
+    const appointmentwithName = await Promise.all(appointmentList.map(async appoint => {
+      const sentto = await Signup.findOne({ email: appoint.email });
+      return {
+        ...appoint._doc,
+        doctorname: user.firstName + " " + user.lastName,
+        username: sentto.firstName + " " + sentto.lastName
+      };
+    }));
+
+    res.status(200).json({ message: 'Appointment for doctor', appointmentwithName });
+  } catch (error) {
+    console.error('Error fetching appointments:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
   
   router.get('/appointmentsByPatient', verifyToken, async(req,res) =>{
       try{
