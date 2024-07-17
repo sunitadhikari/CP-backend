@@ -22,10 +22,24 @@ router.get('/pres', async (req, res) => {
   }
 })
 //check gara hai 
-router.get('/prescriptions checkgara hai ', async (req, res) => {
+// router.get('/prescriptionsByEmail', async (req, res) => {
+//   try {
+//     const patientEmail = req.user.email; 
+//     const appointments = await Appointment.find({ email: email }).select('_id');
+    
+//     const appointmentIds = appointments.map(appointment => appointment._id);
+
+//     const prescriptions = await Prescription.find({ appointmentId: { $in: appointmentIds } });
+    
+//     res.json(prescriptions);
+//   } catch (err) {
+//     res.status(500).json({ error: err.message });
+//   }
+// });
+router.get('/prescriptionsByEmail', async (req, res) => {
   try {
     const patientEmail = req.user.email; 
-    const appointments = await Appointment.find({ email: email }).select('_id');
+    const appointments = await Appointment.find({ email: patientEmail }).select('_id');
     
     const appointmentIds = appointments.map(appointment => appointment._id);
 
@@ -36,6 +50,7 @@ router.get('/prescriptions checkgara hai ', async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+
 router.get('/prescriptions/:appointmentId', async (req, res) => {
   try {
     const prescriptions = await Prescription.find({ appointmentId: req.params.appointmentId });

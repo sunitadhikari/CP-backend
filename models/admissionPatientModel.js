@@ -13,7 +13,7 @@ const patientSchema = new mongoose.Schema({
   department: { type: String },
   bedNumber: { type: String },
   admittedAt: { type: Date, default: Date.now },
-    dischargeDate: { type: Date },
+  dischargeDate: { type: Date },
   isActive: { type: Boolean, default: true }
 });
 
