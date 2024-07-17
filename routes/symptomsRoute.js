@@ -26,6 +26,22 @@ router.get('/getSymptoms', verifyToken, async(req, res)=>{
     }
 })
 
+router.get('/getsymptomsbypatient', verifyToken, async(req, res)=>{
+    try{
+        const {email}=req.user;
+        const user= await Signup.findOne({email});
+        if(!user){
+            return res.status(404).send("User not found!");
+        }
+        const patient=await Symptoms.find({patient:email});
+        if(!patient){
+            return res.status(404).send("Patient not found!");
+        }
+        res.status(200).json({Symptoms:patient});
+    }catch(error){
+        return res.status(500).json({message:"Internal server erro!",error:error.message});
+    }
+})
 
 router.get('/getSymptomsbyEmail', verifyToken, async (req, res) =>{
     
