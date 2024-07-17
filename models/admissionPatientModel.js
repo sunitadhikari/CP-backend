@@ -10,7 +10,7 @@ const patientSchema = new mongoose.Schema({
   contactNumber: { type: String, required: true },
   address: { type: String },
   medicalHistory: { type: String },
-  department: { type: String },
+  ward: { type: String },
   bedNumber: { type: String },
   admittedAt: { type: Date, default: Date.now },
     dischargeDate: { type: Date },

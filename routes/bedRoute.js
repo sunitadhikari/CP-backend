@@ -54,10 +54,10 @@ router.put('/beds/:bedNumber/update-occupied-status', async (req, res) => {
     }
   });
   router.post('/add-bed', (req, res) => {
-    const { department, bedNumbers, charges,occupied} = req.body;
+    const { ward, bedNumbers, charges,occupied} = req.body;
     
     const newBed = new Bed({
-      department,
+      ward,
       bedNumbers,
       charges,
       occupied
