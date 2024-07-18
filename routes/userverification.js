@@ -230,5 +230,63 @@ router.get('/users', verifyToken, async (req, res) => {
         return res.status(500).json({ message: 'Error fetching users', error: error.message });
     }
 });
-
+router.put('/users/:id', verifyToken, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { firstName, lastName, phoneNo, mobileNo, department, picture, sex, bloodGroup, specialist, careerTitle, biograpgy, status, email, address, password, confirmPassword, termCondition, role } = req.body;
+  
+      // Hash the password before saving
+      const hashedPassword = await bcrypt.hash(password, 10);
+      const hashedconfirmPassword = await bcrypt.hash(confirmPassword, 10);
+  
+      const updatedUser = await userRegister.findByIdAndUpdate(
+        id,
+        {
+          firstName,
+          lastName,
+          phoneNo,
+          mobileNo,
+          department,
+          picture,
+          sex,
+          bloodGroup,
+          specialist,
+          careerTitle,
+          biograpgy,
+          status,
+          email,
+          address,
+          password: hashedPassword,
+          confirmPassword: hashedconfirmPassword,
+          termCondition,
+          role
+        },
+        { new: true }
+      );
+  
+      if (!updatedUser) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+  
+      return res.status(200).json(updatedUser);
+    } catch (error) {
+      return res.status(500).json({ message: 'Something went wrong', error: error.message });
+    }
+  });
+  
+  // Delete User
+  router.delete('/delUsers/:id', verifyToken, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const deletedUser = await userRegister.findByIdAndDelete(id);
+  
+      if (!deletedUser) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+  
+      return res.status(200).json({ message: 'User deleted successfully' });
+    } catch (error) {
+      return res.status(500).json({ message: 'Something went wrong', error: error.message });
+    }
+  });
 module.exports = router;
