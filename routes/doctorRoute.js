@@ -59,18 +59,18 @@ router.put('/updateDoctor:id',verifyToken, async (req, res) => {
   }
 });
 
-router.delete('/delDoctor/:id', verifyToken, async (req, res) => {
-  try {
-    const doctor = await Doctor.findByIdAndDelete(req.params.id);
+// router.delete('/delDoctor/:id', verifyToken, async (req, res) => {
+//   try {
+//     const doctor = await Doctor.findByIdAndDelete(req.params.id);
 
-    if (!doctor) {
-      return res.status(404).send({message:'Doctor not found'});
-    }
+//     if (!doctor) {
+//       return res.status(404).send({message:'Doctor not found'});
+//     }
 
-    res.send(doctor);
-  } catch (error) {
-    res.status(500).send(error);
-  }
-});
+//     res.send(doctor);
+//   } catch (error) {
+//     res.status(500).send(error);
+//   }
+// });
 
 module.exports = router;
