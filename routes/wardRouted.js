@@ -5,9 +5,9 @@ const Ward = require('../models/wardModel');
 router.get('/getwards', async (req, res) => {
   try {
     const wards = await Ward.find();
-    const wardCount = await Ward.countDocuments({});
+    // const wardCount = await Ward.countDocuments({});
 
-    res.json({wards,wardCount});
+    res.json(wards);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
