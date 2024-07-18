@@ -108,4 +108,32 @@ router.get('/opdreport',verifyToken, async(req,res)=>{
   }
 });
 
+router.get('/opdreportinDoctor',verifyToken, async(req,res)=>{
+  try{
+    const {email}=req.user;
+    // const user=await Signup.findOne({email});
+    // if(!user){
+    //   return res.status(404).send("User not found!");
+    // }
+    const appointments = await Appointment.find( {doctorname:email} );
+    
+    const appointmentIds = appointments.map(appointment => appointment._id);
+
+    const prescriptions = await Prescription.find({ appointmentId: { $in: appointmentIds } });
+    
+    const data = appointments.map(appointment => {
+      const appointmentPrescriptions = prescriptions.filter(prescription => 
+        prescription.appointmentId.toString() === appointment._id.toString());
+      return {
+        ...appointment.toObject(),
+        prescriptions: appointmentPrescriptions
+      };
+    });
+    res.json(data);
+
+  }catch(error){
+    return res.status(500).json({message:"Internal Server Error!",error:error.message})
+  }
+});
+
 module.exports = router;
