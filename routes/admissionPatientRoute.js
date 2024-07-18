@@ -50,7 +50,6 @@ router.get('/patients/:id', async (req, res) => {
     res.status(400).json({ error: err.message });
   }
 });
-// routes/patients.js
 
 router.put('/patients/:id/discharge', verifyToken, async (req, res) => {
   try {
