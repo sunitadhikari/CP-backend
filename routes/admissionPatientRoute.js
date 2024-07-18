@@ -4,12 +4,36 @@ const express = require('express');
 const router = express.Router();
 const Patient = require('../models/admissionPatientModel');
 const Signup = require('../models/userModel');
+const Beds = require('../models/bedModel');
 const verifyToken=require('../middleware');
 
+// router.get('/patients', async (req, res) => {
+//   try {
+//     const patients = await Patient.find();
+//     const patientCount = await Patient.countDocuments({});
+
+//     res.json({patients,patientCount});
+//   } catch (err) {
+//     res.status(400).json({ error: err.message });
+//   }
+// });
 router.get('/patients', async (req, res) => {
   try {
+    const today = new Date();
+    const startOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    const endOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1);
+
+    const dailyAdmittedPatients = await Patient.countDocuments({
+      admittedAt: {
+        $gte: startOfDay,
+        $lt: endOfDay
+      }
+    });
+
     const patients = await Patient.find();
-    res.json(patients);
+    const patientCount = await Patient.countDocuments({});
+
+    res.json({ dailyAdmittedPatients, patients, patientCount });
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
@@ -26,7 +50,50 @@ router.get('/patients/:id', async (req, res) => {
     res.status(400).json({ error: err.message });
   }
 });
+// routes/patients.js
 
+router.put('/patients/:id/discharge', verifyToken, async (req, res) => {
+  try {
+    const { dischargeDate } = req.body;
+    const patient = await Patient.findByIdAndUpdate(
+      req.params.id,
+      { dischargeDate },
+      { new: true }
+    );
+
+    if (!patient) {
+      return res.status(404).json({ message: 'Patient not found' });
+    }
+
+    const bed = await Bed.findOne({ ward: patient.ward, bedNumbers: patient.bedNumber });
+
+    if (!bed) {
+      return res.status(404).json({ message: 'Bed not found' });
+    }
+
+    bed.occupied = false;
+    await bed.save();
+
+    res.json(patient);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+// router.put('/patients/:id/discharge', verifyToken, async (req, res) => {
+//   try {
+//     const patient = await Patient.findByIdAndUpdate(
+//       req.params.id,
+//       { dischargeDate: new Date() },
+//       { new: true }
+//     );
+//     if (!patient) {
+//       return res.status(404).json({ message: 'Patient not found' });
+//     }
+//     res.json(patient);
+//   } catch (err) {
+//     res.status(400).json({ error: err.message });
+//   }
+// });
 router.post('/patients',verifyToken, async (req, res) => {
   try {
     const patient = new Patient(req.body);

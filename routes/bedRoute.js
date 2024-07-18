@@ -15,6 +15,19 @@ router.get('/beds', async (req, res) => {
       res.status(400).json({ error: err.message });
     }
   });
+router.get('/getCountbeds', async (req, res) => {
+  try {
+    const occupiedBeds = await Bed.countDocuments({ occupied: true });
+    const unoccupiedBeds = await Bed.countDocuments({ occupied: false });
+
+    const beds = await Bed.find();
+    const bedCount = await Bed.countDocuments({});
+
+    res.json({ occupiedBeds, unoccupiedBeds,  bedCount });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
 //   router.put('/beds/:id/update-occupied-status', async (req, res) => {
 //     const { id } = req.params;
 //     const { occupied } = req.body;
