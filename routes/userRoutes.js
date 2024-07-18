@@ -72,7 +72,14 @@ router.get('/getDoctors', async (req, res) => {
       res.status(500).json({ message: 'Error fetching patients', error });
     }
   });
-  
+  router.get('/getReception', async (req, res) => {
+    try {
+      const reception = await User.find({ role: 'reception', isVerified: true });
+      res.status(200).json(reception);
+    } catch (error) {
+      res.status(500).json({ message: 'Error fetching reception', error });
+    }
+  });
   router.get('/getLabtecs', async (req, res) => {
     try {
       const labtecs = await User.find({ role: 'labtec' });

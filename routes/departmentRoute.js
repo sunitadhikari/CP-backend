@@ -14,15 +14,24 @@ router.post('/addDepartment',verifyToken, async (req, res) => {
   }
 });
 
-router.get('/getDepartment',verifyToken, async (req, res) => {
+// router.get('/getDepartment',verifyToken, async (req, res) => {
+//   try {
+//     const departments = await Department.find({});
+//     const departmentCount = await Department.countDocuments({});
+//     res.send(departments,departmentCount );
+//   } catch (error) {
+//     res.status(500).send(error);
+//   }
+// });
+router.get('/getDepartment', verifyToken, async (req, res) => {
   try {
     const departments = await Department.find({});
-    res.send(departments);
+    const departmentCount = await Department.countDocuments({});
+    res.status(200).send({ departments, departmentCount });
   } catch (error) {
     res.status(500).send(error);
   }
 });
-
 router.get('/getdepartment:id',verifyToken, async (req, res) => {
   try {
     const department = await Department.findById(req.params.id);
