@@ -51,11 +51,18 @@ router.get('/appointmentsByEmail', verifyToken, async (req, res) => {
 
         const userAppointments = await appointments.find({ email });
 
-        if (!userAppointments) { 
+        if (userAppointments.length<0 && userAppointments.length==0) { 
             return res.status(404).json({ message: 'No appointments found for this user' });
         }
-
-        res.json({ userAppointments });
+        const appointmentByName = await Promise.all(userAppointments.map(async appoint => {
+          const doctor = await Signup.findOne({email: appoint.doctorname });
+          return {
+              ...appoint._doc,
+              doctorname: doctor.firstName + " " + doctor.lastName
+          };
+ 
+      }));  
+        res.json({ appointmentByName });
     } catch (error) {
         console.log(error);
         res.status(500).json({ message: 'Internal server error' });
