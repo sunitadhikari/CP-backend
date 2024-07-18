@@ -6,15 +6,37 @@ const Patient = require('../models/admissionPatientModel');
 const Signup = require('../models/userModel');
 const verifyToken=require('../middleware');
 
+// router.get('/patients', async (req, res) => {
+//   try {
+//     const patients = await Patient.find();
+//     const patientCount = await Patient.countDocuments({});
+
+//     res.json({patients,patientCount});
+//   } catch (err) {
+//     res.status(400).json({ error: err.message });
+//   }
+// });
 router.get('/patients', async (req, res) => {
   try {
+    const today = new Date();
+    const startOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    const endOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1);
+
+    const dailyAdmittedPatients = await Patient.countDocuments({
+      admittedAt: {
+        $gte: startOfDay,
+        $lt: endOfDay
+      }
+    });
+
     const patients = await Patient.find();
-    res.json(patients);
+    const patientCount = await Patient.countDocuments({});
+
+    res.json({ dailyAdmittedPatients, patients, patientCount });
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
 });
-
 router.get('/patients/:id', async (req, res) => {
   try {
     const patient = await Patient.findById(req.params.id);

@@ -7,14 +7,27 @@ const mongoose = require('mongoose');
 
 
 
+// router.get('/beds', async (req, res) => {
+//     try {
+//       const beds = await Bed.find();
+//       res.json(beds);
+//     } catch (err) {
+//       res.status(400).json({ error: err.message });
+//     }
+//   });
 router.get('/beds', async (req, res) => {
-    try {
-      const beds = await Bed.find();
-      res.json(beds);
-    } catch (err) {
-      res.status(400).json({ error: err.message });
-    }
-  });
+  try {
+    const occupiedBeds = await Bed.countDocuments({ occupied: true });
+    const unoccupiedBeds = await Bed.countDocuments({ occupied: false });
+
+    const beds = await Bed.find();
+    const bedCount = await Bed.countDocuments({});
+
+    res.json({ occupiedBeds, unoccupiedBeds, beds, bedCount });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
 //   router.put('/beds/:id/update-occupied-status', async (req, res) => {
 //     const { id } = req.params;
 //     const { occupied } = req.body;
