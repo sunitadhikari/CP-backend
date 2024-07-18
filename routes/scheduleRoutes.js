@@ -36,7 +36,7 @@ router.get('/getSchedule', async(req, res)=>{
             return res.status(404).json({ message: 'User not found' });
         }
         
-        const schedules = await schedule.find({ doctorName: user.name });
+        const schedules = await schedule.find({ doctorName: user.email});
         
         if (schedules && schedules.length > 0) {
             res.status(200).json({ message: "Doctor schedule for doctor:", data: schedules });
@@ -51,6 +51,30 @@ router.get('/getSchedule', async(req, res)=>{
 
   
   //to get doctor schedule on patient's profile
+  // router.get('/getschedulebyPatient', verifyToken, async (req, res) =>{
+    
+  //   try{
+  //       const schedul= await schedule.find();
+  //       if(schedul.length>0){
+            
+  //           const scheduleByName = await Promise.all(schedul.map(async sc => {
+  //               const [firstName, lastName] = sc.doctorName.split(' ');
+  //               const doctor = await Signup.findOne({ firstName, lastName });
+  //               return {
+  //                   ...sc._doc,
+  //                   doctorName: doctor.firstName + " " + doctor.lastName
+  //               };
+       
+  //           }));  
+  //           res.status(200).json({ message:"Doctor schedules to patients:",data: scheduleByName });
+  //       }
+        
+  //   }catch(error)
+  //   {
+  //       res.status(500).json({ message: 'something is error', error:error.message });
+  //   }
+  // });
+
   router.get('/getschedulebyPatient', verifyToken, async (req, res) =>{
     
     try{
@@ -58,8 +82,7 @@ router.get('/getSchedule', async(req, res)=>{
         if(schedul.length>0){
             
             const scheduleByName = await Promise.all(schedul.map(async sc => {
-                const [firstName, lastName] = sc.doctorName.split(' ');
-                const doctor = await Signup.findOne({ firstName, lastName });
+                const doctor = await Signup.findOne({email: sc.doctorName });
                 return {
                     ...sc._doc,
                     doctorName: doctor.firstName + " " + doctor.lastName
@@ -74,8 +97,6 @@ router.get('/getSchedule', async(req, res)=>{
         res.status(500).json({ message: 'something is error', error:error.message });
     }
   });
-
-
 
   router.put('/updateschedule/:id',verifyToken, async (req, res) => {
     try {

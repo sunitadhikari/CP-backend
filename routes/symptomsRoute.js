@@ -120,5 +120,22 @@ router.get('/getSymptomsbyEmail', verifyToken, async (req, res) =>{
     }
   })
 
+router.put('/assignDoctor/:id',verifyToken,async(req,res)=>{
+    try{
+        const { email } =req.user;
+    const user = await Signup.findOne({email});
+    if(!user){
+        return res.status(404).send("User not found!");
+    }
+    const { doctor}=req.body;
+    const assign = await Symptoms.findByIdAndUpdate(req.params.id,{doctor},{new:true});
+    if(!assign){
+        return res.status(404).send("Symptoms not found!");
+    }
+    res.status(200).json({message:"Doctor successfully assigned to this patient!",assign});
+    }catch(error){
+        return res.status(500).send({message:"Something is wrong!",error:error.message});
+    }
+});
 
 module.exports = router
