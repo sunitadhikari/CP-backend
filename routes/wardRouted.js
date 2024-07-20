@@ -55,7 +55,7 @@ router.put('/editWard/:id', async (req, res) => {
       return res.status(404).json({ message: 'Ward not found' });
     }
 
-    ward.wardType = req.body.wardType.toLowerCase();
+    // ward.wardType = req.body.wardType.toLowerCase();
     ward.capacity = req.body.capacity;
 
     const updatedWard = await ward.save();
@@ -72,7 +72,7 @@ router.delete('/deleteWard/:id', async (req, res) => {
       return res.status(404).json({ message: 'Ward not found' });
     }
 
-    await ward.remove();
+    // await ward.remove();
     res.json({ message: 'Ward deleted' });
   } catch (err) {
     res.status(500).json({ message: err.message });
