@@ -43,43 +43,36 @@ router.get('/getsymptomsbypatient', verifyToken, async(req, res)=>{
     }
 })
 
-router.get('/getSymptomsbyEmail', verifyToken, async (req, res) =>{
-    
-    try{
-       
+router.get('/getSymptomsbyEmail', verifyToken, async (req, res) => {
+    try {
         const { email } = req.user;
-            
+
         const user = await Signup.findOne({ email });
-        
-        // If the user is not found, handle the error
-    if (!user) {
-        return res.status(404).json({ message: 'User not found' });
-    }
-   
-        const symptom= await Symptoms.find({patient: email});
-        
-        if(symptom){
-            
-            const symptomByName = await Promise.all(symptom.map(async sy => {
-                
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        const symptoms = await Symptoms.find({ patient: email });
+
+        if (symptoms.length > 0) {
+            const symptomByName = await Promise.all(symptoms.map(async (sy) => {
                 const sentto = await Signup.findOne({ email: sy.doctor });
                 return {
                     ...sy._doc,
-                    patient: user.firstName,
-                    doctor: sentto.firstName
+                    patient: user.firstName + " " + user.lastName,
+                    doctor: sentto ? sentto.firstName + " " + sentto.lastName : 'Not assigned'
                 };
-            }));  
-             res.json({ data: symptomByName });
+            }));
+            res.json({ data: symptomByName });
+        } else {
+            res.status(404).json({ message: "No symptoms found for this user" });
         }
-        else{
-            res.status(404).json({message: "data not found"});
-        }
+    } catch (error) {
+        console.error('Error fetching symptoms:', error);
+        res.status(500).json({ message: 'Internal server error', error: error.toString() });
     }
-    catch(error)
-    {
-        res.status(500).json({ messgae: 'something is error', error });
-    }
-  })
+});
 
 
 
@@ -120,6 +113,7 @@ router.get('/getSymptomsbyEmail', verifyToken, async (req, res) =>{
     }
   })
 
+  //for reception
 router.put('/assignDoctor/:id',verifyToken,async(req,res)=>{
     try{
         const { email } =req.user;

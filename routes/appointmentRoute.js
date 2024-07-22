@@ -3,6 +3,8 @@ const router = express.Router();
 const appointments = require('../models/appointmentModel');
 const Signup= require('../models/userModel');
 const verifyToken = require('../middleware');
+const Prescription = require('../models/appPrescription.model');
+const Schedule = require('../models/scheduleModel');
 
 router.post('/postAppointment', verifyToken, async (req, res) => {
     const email = req.user.email;
@@ -45,29 +47,59 @@ router.post('/postAppointment', verifyToken, async (req, res) => {
         res.status(400).send(error);
       }
     });
-router.get('/appointmentsByEmail', verifyToken, async (req, res) => {
-    try {
-        const email = req.user.email; // Ensure the token contains the email
+// router.get('/appointmentsByEmail', verifyToken, async (req, res) => {
+//     try {
+//         const email = req.user.email; // Ensure the token contains the email
 
-        const userAppointments = await appointments.find({ email });
+//         const userAppointments = await appointments.find({ email });
 
-        if (userAppointments.length<0 && userAppointments.length==0) { 
-            return res.status(404).json({ message: 'No appointments found for this user' });
-        }
-        const appointmentByName = await Promise.all(userAppointments.map(async appoint => {
-          const doctor = await Signup.findOne({email: appoint.doctorname });
-          return {
-              ...appoint._doc,
-              doctorname: doctor.firstName + " " + doctor.lastName
-          };
+//         if (userAppointments.length<0 && userAppointments.length==0) { 
+//             return res.status(404).json({ message: 'No appointments found for this user' });
+//         }
+//         const appointmentByName = await Promise.all(userAppointments.map(async appoint => {
+//           const doctor = await Signup.findOne({email: appoint.doctorname });
+//           return {
+//               ...appoint._doc,
+//               doctorname: doctor.firstName + " " + doctor.lastName
+              
+//           };
  
-      }));  
-        res.json({ appointmentByName });
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({ message: 'Internal server error' });
-    }
+//       }));  
+//         res.json({ appointmentByName });
+//     } catch (error) {
+//         console.log(error);
+//         res.status(500).json({ message: 'Internal server error' });
+//     }
+// });
+
+
+router.get('/appointmentsByEmail', verifyToken, async (req, res) => {
+  try {
+      const email = req.user.email; // Ensure the token contains the email
+
+      const userAppointments = await appointments.find({ email });
+
+      if (userAppointments.length<0 && userAppointments.length==0) { 
+          return res.status(404).json({ message: 'No appointments found for this user' });
+      }
+      const appointmentByName = await Promise.all(userAppointments.map(async appoint => {
+        const doctor = await Signup.findOne({email: appoint.doctorname });
+        const schedule = await Schedule.findOne({doctorName:appoint.doctorname})
+        return {
+            ...appoint._doc,
+            doctorname: doctor.firstName + " " + doctor.lastName,
+            doctorSchedule: schedule
+        };
+
+    }));  
+      res.json({ appointmentByName });
+  } catch (error) {
+      console.log(error);
+      res.status(500).json({ message: 'Internal server error' });
+  }
 });
+
+
 router.post('/updatePaymentStatus', verifyToken, async (req, res) => {
   const { id, payload } = req.body;
 
@@ -142,6 +174,39 @@ router.get('/appointment', verifyToken, async (req, res) => {
 //       res.status(500).json({ message: 'Internal server error' });
 //     }
 //   });
+
+
+
+// router.get('/docAppointmentsEmail', verifyToken, async (req, res) => {
+//   try {
+//     const doctorEmail = req.user.email; 
+//     const user = await Signup.findOne({ email: doctorEmail });
+//     if (!user) {
+//       return res.status(404).json({ message: 'User not found' });
+//     }
+
+//     // Find appointments where the doctorname is doctorEmail and isPaid is true
+//     const appointmentList = await appointments.find({ doctorname: doctorEmail, isPaid: true });
+//     if (!appointmentList || appointmentList.length === 0) {
+//       return res.status(404).send('No appointments for this doctor');
+//     }
+
+//     const appointmentwithName = await Promise.all(appointmentList.map(async appoint => {
+//       const sentto = await Signup.findOne({ email: appoint.email });
+//       return {
+//         ...appoint._doc,
+//         doctorname: user.firstName + " " + user.lastName,
+//         username: sentto.firstName + " " + sentto.lastName
+//       };
+//     }));
+
+//     res.status(200).json({ message: 'Appointment for doctor', appointmentwithName });
+//   } catch (error) {
+//     console.error('Error fetching appointments:', error);
+//     res.status(500).json({ message: 'Internal server error' });
+//   }
+// });
+
 router.get('/docAppointmentsEmail', verifyToken, async (req, res) => {
   try {
     const doctorEmail = req.user.email; 
@@ -155,15 +220,18 @@ router.get('/docAppointmentsEmail', verifyToken, async (req, res) => {
     if (!appointmentList || appointmentList.length === 0) {
       return res.status(404).send('No appointments for this doctor');
     }
+    const appointmentIds = appointmentList.map(appointment => appointment._id);
 
-    const appointmentwithName = await Promise.all(appointmentList.map(async appoint => {
-      const sentto = await Signup.findOne({ email: appoint.email });
+    const prescriptions = await Prescription.find({ appointmentId: { $in: appointmentIds } });
+    
+    const appointmentwithName = appointmentList.map(appointment => {
+      const appointmentPrescriptions = prescriptions.filter(prescription => 
+        prescription.appointmentId.toString() === appointment._id.toString());
       return {
-        ...appoint._doc,
-        doctorname: user.firstName + " " + user.lastName,
-        username: sentto.firstName + " " + sentto.lastName
+        ...appointment.toObject(),
+        prescriptions: appointmentPrescriptions
       };
-    }));
+    });
 
     res.status(200).json({ message: 'Appointment for doctor', appointmentwithName });
   } catch (error) {
@@ -239,4 +307,6 @@ router.delete('/delAppointment/:id', verifyToken, async(req,res)=>{
     res.status(500).send(error);
   }
 })
+
+
 module.exports = router;
