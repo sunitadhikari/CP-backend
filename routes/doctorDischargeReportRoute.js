@@ -14,7 +14,7 @@ router.post('/doctorDischargeReport', async (req, res) => {
 });
 router.get('/doctorDischargeReport', async (req, res) => {
     try {
-        const reports = await DoctorDischargeReport.find();
+        const reports = await DoctorDischargeReport.find({ dischargeRequest: true });
         res.json(reports);
     } catch (error) {
         res.status(500).json({ message: error.message });

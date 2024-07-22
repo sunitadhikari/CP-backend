@@ -9,7 +9,9 @@ const hospitalDischargeReportSchema = new mongoose.Schema({
     finalDiagnosis: { type: String, required: true },
     summaryOfTreatment: { type: String, required: true },
     dischargeMedications: { type: String, required: true },
-    followUpInstructions: { type: String, required: true }
+    followUpInstructions: { type: String, required: true },
+    hospitalDischargeRequest: { type: Boolean, default: false }
+
 });
 
 const HospitalDischargeReport = mongoose.model('HospitalDischargeReport', hospitalDischargeReportSchema);

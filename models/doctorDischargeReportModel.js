@@ -15,7 +15,10 @@ const doctorDischargeReportSchema = new mongoose.Schema({
     diagnosis: { type: String, required: true },
     treatmentGiven: { type: String, required: true },
     dischargeInstructions: { type: String, required: true },
-    followUpPlan: { type: String, required: true }
+    followUpPlan: { type: String, required: true }, 
+    dischargeRequest: { type: Boolean, default: false }
+
+
 });
 
 const DoctorDischargeReport = mongoose.model('DoctorDischargeReport', doctorDischargeReportSchema);

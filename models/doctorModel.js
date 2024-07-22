@@ -17,7 +17,7 @@ const doctorSchema = new mongoose.Schema({
   mobileNo: { type: String, required: true },
   careerTitle: { type: String, required: true },
   biography: { type: String },
-  status:{type:String}
+  status:{type:String},
 });
 
 const Doctor = mongoose.model('Doctor', doctorSchema);
