@@ -18,8 +18,20 @@ router.post('/postSymptoms', verifyToken, async (req, res) => {
 });
 router.get('/getSymptoms', verifyToken, async(req, res)=>{
     try{
-        const symptom = await Symptoms.find();
-        res.json(symptom);
+        const symptoms = await Symptoms.find();
+
+        const symptomDetails = await Promise.all(symptoms.map(async (symptom) => {
+            const patient = await Signup.findOne({ email: symptom.patient });
+            const doctor = await Signup.findOne({ email: symptom.doctor });
+
+            return {
+                ...symptom._doc,
+                patient: patient ? `${patient.firstName} ${patient.lastName}` : 'Unknown Patient',
+                doctor: doctor ? `${doctor.firstName} ${doctor.lastName}` : 'Not Assigned'
+            };
+        }));
+
+        res.json(symptomDetails);
     }
     catch(err){
         res.status(500).json({message:err.message})
