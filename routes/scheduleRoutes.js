@@ -47,7 +47,7 @@ router.get('/getSchedule', async(req, res)=>{
         res.status(500).json({ message: 'Something went wrong', error: error.message });
     }
 });
-
+//
 
   
   //to get doctor schedule on patient's profile
