@@ -46,5 +46,15 @@ router.post('/save-bill', async (req, res) => {
       res.status(500).json({ message: 'Failed to save bill' });
     }
   });
+  router.get('/payments', async (req, res) => {
+    try {
+      // Fetch all payment records from the relevant collection
+      // For example, if you have a "Payments" collection:
+      const payments = await Bill.find(); // Adjust query as needed
+      res.status(200).json(payments);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to retrieve payments' });
+    }
+  });
   
 module.exports = router;
