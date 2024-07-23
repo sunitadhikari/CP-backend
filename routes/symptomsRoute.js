@@ -144,4 +144,38 @@ router.put('/assignDoctor/:id',verifyToken,async(req,res)=>{
     }
 });
 
+
+  //for reception
+  router.put('/updatesymptoms/:id',verifyToken,async(req,res)=>{
+    try{
+        const { email } =req.user;
+    const user = await Signup.findOne({email});
+    if(!user){
+        return res.status(404).send("User not found!");
+    }
+    const { symptoms}=req.body;
+    const assign = await Symptoms.findByIdAndUpdate(req.params.id,{symptoms},{new:true});
+    if(!assign){
+        return res.status(404).send("Symptoms not found!");
+    }
+    res.status(200).json({message:"Symptoms updated successfully!",assign});
+    }catch(error){
+        return res.status(500).send({message:"Something is wrong!",error:error.message});
+    }
+});
+
+  // Delete Symptoms
+  router.delete('/delsymptoms/:id', verifyToken, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const deletedsymptoms = await Symptoms.findByIdAndDelete(id);
+  
+      if (!deletedsymptoms) {
+        return res.status(404).json({ message: 'Symptoms not found' });
+      }
+      return res.status(200).json({ message: 'Symptoms deleted successfully' });
+    } catch (error) {
+      return res.status(500).json({ message: 'Something went wrong', error: error.message });
+    }
+  });
 module.exports = router
