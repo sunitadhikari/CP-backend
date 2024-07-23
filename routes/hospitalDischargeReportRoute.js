@@ -16,7 +16,7 @@ router.post('/hospitalDischargeReport', verifyToken, async (req, res) => {
 
 router.get('/gethospitalDischargeReport', verifyToken, async(req,res)=>{
     try{
-       const report=await HospitalDischargeReport.find();
+       const report=await HospitalDischargeReport.find({ hospitalDischargeRequest: true });
        res.status(200).json(report);
     }catch(error){
         res.status(500).json({ message: "Internal server error!",error:error.message });
