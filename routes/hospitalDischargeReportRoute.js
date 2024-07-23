@@ -78,36 +78,6 @@ router.get('/gethospitalDischargeReport', async (req, res) => {
     }
 });
 
-// router.get('/gethospitalDischargeReport', async(req,res)=>{
-//     try{
-//        const report=await HospitalDischargeReport.find();
-//        const reportwithbed = await Promise.all(report.map(async reports =>{
-//             const user = await Signup.find({email:reports.patientName});
-//             if(!user || user.length === 0){
-//                 return res.status(404).send("Patient not found");
-//             }
-//             const bed=await AdmissionPatient.find(user.firstName && user.lastName);
-//             if(!bed || bed.length === 0){
-//                 return res.status(404).send("Admission Data not found for this patient");
-//             }
-//             const charge = await Bed.findOne({bedNumbers:bed.bedNumber});
-//             if(!charge || charge.length == 0)
-//             {
-//                 return res.status(404).send("No bed found for this user")
-//             }
-//             return{
-//                 ...user._doc,
-//                 bed:bed,
-//                 charge:charge,
-//             }
-//        }))
-       
-//        res.status(200).json(reportwithbed);
-//     }catch(error){
-//         res.status(500).json({ message: "Internal server error!",error:error.message });
-//     }
-// })
-
 router.get('/gethospitalDischargeReportbyEmail', verifyToken, async(req,res)=>{
     try{
         const {email,firstName, lastName}=req.user;
