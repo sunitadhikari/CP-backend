@@ -75,28 +75,46 @@ router.get('/getSchedule', async(req, res)=>{
   //   }
   // });
 
-  router.get('/getschedulebyPatient', verifyToken, async (req, res) =>{
-    
-    try{
-        const schedul= await schedule.find();
-        if(schedul.length>0){
-            
-            const scheduleByName = await Promise.all(schedul.map(async sc => {
-                const doctor = await Signup.findOne({email: sc.doctorName });
-                return {
-                    ...sc._doc,
-                    doctorName: doctor.firstName + " " + doctor.lastName
-                };
-       
-            }));  
-            res.status(200).json({ message:"Doctor schedules to patients:",data: scheduleByName });
+  router.get('/getschedulebyPatient', verifyToken, async (req, res) => {
+    try {
+        // Lookup schedule and join with Signup collection
+        const scheduleWithDoctorInfo = await schedule.aggregate([
+            {
+                $lookup: {
+                    from: 'schedule', // The collection name in MongoDB
+                    localField: 'doctorName',
+                    foreignField: 'firstName', // Ensure this is correct, might need tweaking
+                    as: 'doctorInfo'
+                }
+            },
+            {
+                $unwind: {
+                    path: '$doctorInfo',
+                    preserveNullAndEmptyArrays: true
+                }
+            },
+            {
+                $project: {
+                    doctorName: { $concat: ['$doctorInfo.firstName', ' ', '$doctorInfo.lastName'] },
+                    availableDays: 1,
+                    startTime: 1,
+                    endTime: 1,
+                    mobileNumber: 1,
+                    sex: 1
+                }
+            }
+        ]);
+
+        if (scheduleWithDoctorInfo.length > 0) {
+            res.status(200).json({ message: "Doctor schedules to patients:", data: scheduleWithDoctorInfo });
+        } else {
+            res.status(404).json({ message: "No schedules found" });
         }
-        
-    }catch(error)
-    {
-        res.status(500).json({ message: 'something is error', error:error.message });
+    } catch (error) {
+        res.status(500).json({ message: 'Something went wrong', error: error.message });
     }
-  });
+});
+
 
   router.put('/updateschedule/:id',verifyToken, async (req, res) => {
     try {
