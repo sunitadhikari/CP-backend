@@ -42,6 +42,25 @@ router.get('/getsymptomsbypatient', verifyToken, async(req, res)=>{
         return res.status(500).json({message:"Internal server erro!",error:error.message});
     }
 })
+router.delete('/deletesymptom/:id', verifyToken, async (req, res) => {
+    try {
+        const symptomId = req.params.id;
+
+        // Check if the symptom exists
+        const symptom = await Symptoms.findById(symptomId);
+        if (!symptom) {
+            return res.status(404).send("Symptom not found!");
+        }
+
+        // Delete the symptom
+        await Symptoms.findByIdAndDelete(symptomId);
+        res.status(200).json({ message: "Symptom deleted successfully!" });
+
+    } catch (error) {
+        res.status(500).json({ message: "Internal server error!", error: error.message });
+    }
+});
+
 
 router.get('/getSymptomsbyEmail', verifyToken, async (req, res) =>{
     
