@@ -14,23 +14,8 @@ router.get('/getwards', async (req, res) => {
 });
 
 // router.post('/postWards', async (req, res) => {
-//   const ward = new Ward({
-//     wardType: req.body.wardType,
-//     capacity: req.body.capacity,
-//   });
+//   const wardType = req.body.wardType.toLowerCase(); // Convert to lowercase
 
-//   try {
-//     const newWard = await ward.save();
-//     res.status(201).json(newWard);
-//   } catch (err) {
-//     res.status(400).json({ message: err.message });
-//   }
-// });
-// router.post('/postWards', async (req, res) => {
-//   // const wardType = req.body.wardType.toLowerCase(); 
-//   const wardType = req.body.wardType // Convert to lowercase
-
-//   // Check if wardTy already exists
 //   try {
 //     const existingWard = await Ward.findOne({ wardType: wardType });
 //     if (existingWard) {
@@ -50,6 +35,7 @@ router.get('/getwards', async (req, res) => {
 // });
 router.post('/postWards', async (req, res) => {
   const wardType = req.body.wardType.toLowerCase(); // Convert to lowercase
+  console.log('Converted wardType:', wardType); // Debug statement
 
   try {
     const existingWard = await Ward.findOne({ wardType: wardType });
@@ -68,6 +54,7 @@ router.post('/postWards', async (req, res) => {
     res.status(400).json({ message: err.message });
   }
 });
+
 
 router.put('/editWard/:id', async (req, res) => {
   try {
