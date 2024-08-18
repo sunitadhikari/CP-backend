@@ -15,6 +15,7 @@ router.get('/beds', async (req, res) => {
       res.status(400).json({ error: err.message });
     }
   });
+  // pull agaian
 router.get('/getCountbeds', async (req, res) => {
   try {
     const occupiedBeds = await Bed.countDocuments({ occupied: true });
