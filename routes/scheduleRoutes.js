@@ -36,7 +36,7 @@ router.get('/getSchedule', async(req, res)=>{
             return res.status(404).json({ message: 'User not found' });
         }
         
-        const schedules = await schedule.find({ doctorName: user.name });
+        const schedules = await schedule.find({ doctorName: user.email});
         
         if (schedules && schedules.length > 0) {
             res.status(200).json({ message: "Doctor schedule for doctor:", data: schedules });
@@ -47,7 +47,7 @@ router.get('/getSchedule', async(req, res)=>{
         res.status(500).json({ message: 'Something went wrong', error: error.message });
     }
 });
-
+//
 
   
   //to get doctor schedule on patient's profile

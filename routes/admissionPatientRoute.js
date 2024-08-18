@@ -64,7 +64,7 @@ router.put('/patients/:id/discharge', verifyToken, async (req, res) => {
       return res.status(404).json({ message: 'Patient not found' });
     }
 
-    const bed = await Bed.findOne({ ward: patient.ward, bedNumbers: patient.bedNumber });
+    const bed = await Beds.findOne({ ward: patient.ward, bedNumbers: patient.bedNumber });
 
     if (!bed) {
       return res.status(404).json({ message: 'Bed not found' });

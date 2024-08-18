@@ -30,7 +30,7 @@ function sendVerificationEmail(user) {
     };
     return transporter.sendMail(mailOptions);
 }
-router.post('/signupUser', verifyToken, async (req, res) => {
+router.post('/signupUser',  async (req, res) => {
     try {
       const { firstName,lastName,phoneNo,mobileNo,department, picture,sex,bloodGroup,specialist,careerTitle,biograpgy,status, email,  address, password, confirmPassword,termCondition, role } = req.body;
   
