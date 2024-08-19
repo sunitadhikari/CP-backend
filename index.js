@@ -23,6 +23,8 @@ const appPrescription=require('./routes/appPrescription.routes')
 const admissionPatientRoute=require('./routes/admissionPatientRoute')
 const wardRouted=require('./routes/wardRouted')
 const billRoutes=require('./routes/billRoutes')
+const reportRoute=require('./routes/reportRoute')
+
 
 app.use(express.json())
 app.use(cors());
@@ -47,6 +49,7 @@ app.use(appPrescription);
 app.use(admissionPatientRoute);
 app.use(wardRouted);
 app.use(billRoutes);
+app.use(reportRoute);
 
 
 

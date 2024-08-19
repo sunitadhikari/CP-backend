@@ -1,35 +1,13 @@
-// const mongoose = require('mongoose');
+// models/report.model.js
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 
-// const doctorDischargeReportSchema = new mongoose.Schema({
-//     patientName: { type: String, required: true },
-//     patientAge: { type: Number, required: true },
-//     patientGender: { type: String, required: true },
-//     diagnosis: { type: String, required: true },
-//     treatmentGiven: { type: String, required: true },
-//     dischargeInstructions: { type: String, required: true },
-//     followUpPlan: { type: String, required: true },
-//     email: { type: String, required: true } 
-// });
+const reportSchema = new Schema({
+  patient: { type: Schema.Types.ObjectId, ref: 'Patient', required: true },
+  date: { type: Date, required: true },
+  symptoms: { type: String, required: true },
+  diagnosis: { type: String, required: true },
+  treatment: { type: String, required: true },
+}, { timestamps: true });
 
-// const DoctorDischargeReport = mongoose.model('DoctorDischargeReport', doctorDischargeReportSchema);
-
-// module.exports = DoctorDischargeReport;
-
-// const mongoose = require('mongoose');
-
-// const hospitalDischargeReportSchema = new mongoose.Schema({
-//     patientName: { type: String, required: true },
-//     patientAge: { type: Number, required: true },
-//     patientGender: { type: String, required: true },
-//     admissionDate: { type: Date, required: true },
-//     dischargeDate: { type: Date, required: true },
-//     finalDiagnosis: { type: String, required: true },
-//     summaryOfTreatment: { type: String, required: true },
-//     dischargeMedications: { type: String, required: true },
-//     followUpInstructions: { type: String, required: true },
-//     email: { type: String, required: true } 
-// });
-
-// const HospitalDischargeReport = mongoose.model('HospitalDischargeReport', hospitalDischargeReportSchema);
-
-// module.exports = HospitalDischargeReport;
+module.exports = mongoose.model('Report', reportSchema);
