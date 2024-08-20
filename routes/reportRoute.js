@@ -15,9 +15,9 @@ router.post('/dailyReport', async (req, res) => {
   });
   
   // Get all reports
-  router.get('/dailyReport', async (req, res) => {
+  router.get('/getDailyReport', async (req, res) => {
     try {
-      const reports = await Report.find().populate('patient');
+      const reports = await Report.find();
       res.status(200).json(reports);
     } catch (error) {
       res.status(400).json({ message: error.message });
