@@ -4,16 +4,37 @@ const schedule = require('../models/scheduleModel');
 const verifyToken=require('../middleware');
 const Signup=require('../models/userModel');
 
-router.post('/postSchedule', async(req, res)=>{
-    try{
-       const schedules = new schedule(req.body);
-       await schedules.save();
-       res.status(201).json(schedules);
+// router.post('/postSchedule', async(req, res)=>{
+//     try{
+//        const schedules = new schedule(req.body);
+//        await schedules.save();
+//        res.status(201).json(schedules);
+//     }
+//     catch(err){
+//      res.status(500).json({message:err.message})
+//     }
+// })
+router.post('/postSchedule', async (req, res) => {
+  try {
+    const { doctorName, availableDays } = req.body;
+
+    // Check if a schedule already exists for the same doctor with the same availableDays
+    const existingSchedule = await schedule.findOne({ doctorName, availableDays });
+
+    if (existingSchedule) {
+      return res.status(400).json({ message: 'Schedule already exists for this doctor on the specified day.' });
     }
-    catch(err){
-     res.status(500).json({message:err.message})
-    }
-})
+
+    // If no such schedule exists, proceed to save the new schedule
+    const newSchedule = new schedule(req.body);
+    await newSchedule.save();
+
+    res.status(201).json(newSchedule);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
 router.get('/getSchedule', async(req, res)=>{
     try{
         const schedul = await schedule.find();

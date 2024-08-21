@@ -10,6 +10,9 @@ const hospitalDischargeReportSchema = new mongoose.Schema({
     summaryOfTreatment: { type: String, required: true },
     dischargeMedications: { type: String, required: true },
     followUpInstructions: { type: String, required: true },
+    department: { type: String, required: true },
+    ward: { type: String, required: true },
+    bedNumber: { type: String, required: true },
     hospitalDischargeRequest: { type: Boolean, default: false }
 
 });

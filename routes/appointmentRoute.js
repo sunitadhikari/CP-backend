@@ -72,32 +72,68 @@ router.post('/postAppointment', verifyToken, async (req, res) => {
 //     }
 // });
 
-
 router.get('/appointmentsByEmail', verifyToken, async (req, res) => {
   try {
       const email = req.user.email; // Ensure the token contains the email
 
       const userAppointments = await appointments.find({ email });
 
-      if (userAppointments.length<0 && userAppointments.length==0) { 
+      if (!userAppointments || userAppointments.length === 0) { 
           return res.status(404).json({ message: 'No appointments found for this user' });
       }
-      const appointmentByName = await Promise.all(userAppointments.map(async appoint => {
-        const doctor = await Signup.findOne({email: appoint.doctorname });
-        const schedule = await Schedule.findOne({doctorName:appoint.doctorname})
-        return {
-            ...appoint._doc,
-            doctorname: doctor.firstName + " " + doctor.lastName,
-            doctorSchedule: schedule
-        };
 
-    }));  
+      const appointmentByName = await Promise.all(userAppointments.map(async (appoint) => {
+        const doctor = await Signup.findOne({ email: appoint.doctorname });
+
+        if (!doctor) {
+          // Handle case where doctor is not found
+          return {
+            ...appoint._doc,
+            doctorname: 'Unknown Doctor',
+            doctorSchedule: null
+          };
+        }
+
+        const schedule = await Schedule.findOne({ doctorName: appoint.doctorname });
+        return {
+          ...appoint._doc,
+          doctorname: doctor.firstName + " " + doctor.lastName,
+          doctorSchedule: schedule || 'No schedule available' // Handle case where schedule is not found
+        };
+      }));
+
       res.json({ appointmentByName });
   } catch (error) {
       console.log(error);
       res.status(500).json({ message: 'Internal server error' });
   }
 });
+
+// router.get('/appointmentsByEmail', verifyToken, async (req, res) => {
+//   try {
+//       const email = req.user.email; // Ensure the token contains the email
+
+//       const userAppointments = await appointments.find({ email });
+
+//       if (userAppointments.length<0 && userAppointments.length==0) { 
+//           return res.status(404).json({ message: 'No appointments found for this user' });
+//       }
+//       const appointmentByName = await Promise.all(userAppointments.map(async appoint => {
+//         const doctor = await Signup.findOne({email: appoint.doctorname });
+//         const schedule = await Schedule.findOne({doctorName:appoint.doctorname})
+//         return {
+//             ...appoint._doc,
+//             doctorname: doctor.firstName + " " + doctor.lastName,
+//             doctorSchedule: schedule
+//         };
+
+//     }));  
+//       res.json({ appointmentByName });
+//   } catch (error) {
+//       console.log(error);
+//       res.status(500).json({ message: 'Internal server error' });
+//   }
+// });
 
 
 router.post('/updatePaymentStatus', verifyToken, async (req, res) => {
