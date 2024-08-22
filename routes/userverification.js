@@ -32,7 +32,7 @@ function sendVerificationEmail(user) {
 }
 router.post('/signupUser',  async (req, res) => {
     try {
-      const { firstName,lastName,phoneNo,mobileNo,department, picture,sex,bloodGroup,specialist,careerTitle,biograpgy,status, email,  address, password, confirmPassword,termCondition, role } = req.body;
+      const { firstName,lastName,phoneNo,mobileNo,department, image,sex,bloodGroup,specialist,careerTitle,biograpgy,status, email,  address, password, confirmPassword,termCondition, role } = req.body;
   
       if (password !== confirmPassword) {
         return res.status(400).json({ message: 'Passwords do not match' });
@@ -54,7 +54,7 @@ router.post('/signupUser',  async (req, res) => {
             phoneNo,
             mobileNo,
             department,
-            picture,
+            image,
             sex,
             bloodGroup,
             specialist,
@@ -88,7 +88,7 @@ router.post('/signupUser',  async (req, res) => {
             phoneNo,
             mobileNo,
             department,
-            picture,
+            image,
             sex,
             bloodGroup,
             specialist,
@@ -233,7 +233,7 @@ router.get('/users', verifyToken, async (req, res) => {
 router.put('/users/:id', verifyToken, async (req, res) => {
     try {
       const { id } = req.params;
-      const { firstName, lastName, phoneNo, mobileNo, department, picture, sex, bloodGroup, specialist, careerTitle, biograpgy, status, email, address, password, confirmPassword, termCondition, role } = req.body;
+      const { firstName, lastName, phoneNo, mobileNo, department, image, sex, bloodGroup, specialist, careerTitle, biograpgy, status, email, address, password, confirmPassword, termCondition, role } = req.body;
   
       // Hash the password before saving
       const hashedPassword = await bcrypt.hash(password, 10);
@@ -247,7 +247,7 @@ router.put('/users/:id', verifyToken, async (req, res) => {
           phoneNo,
           mobileNo,
           department,
-          picture,
+          image,
           sex,
           bloodGroup,
           specialist,

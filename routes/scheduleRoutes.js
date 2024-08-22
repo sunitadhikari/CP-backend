@@ -4,16 +4,37 @@ const schedule = require('../models/scheduleModel');
 const verifyToken=require('../middleware');
 const Signup=require('../models/userModel');
 
-router.post('/postSchedule', async(req, res)=>{
-    try{
-       const schedules = new schedule(req.body);
-       await schedules.save();
-       res.status(201).json(schedules);
+// router.post('/postSchedule', async(req, res)=>{
+//     try{
+//        const schedules = new schedule(req.body);
+//        await schedules.save();
+//        res.status(201).json(schedules);
+//     }
+//     catch(err){
+//      res.status(500).json({message:err.message})
+//     }
+// })
+router.post('/postSchedule', async (req, res) => {
+  try {
+    const { doctorName, availableDays } = req.body;
+
+    // Check if a schedule already exists for the same doctor with the same availableDays
+    const existingSchedule = await schedule.findOne({ doctorName, availableDays });
+
+    if (existingSchedule) {
+      return res.status(400).json({ message: 'Schedule already exists for this doctor on the specified day.' });
     }
-    catch(err){
-     res.status(500).json({message:err.message})
-    }
-})
+
+    // If no such schedule exists, proceed to save the new schedule
+    const newSchedule = new schedule(req.body);
+    await newSchedule.save();
+
+    res.status(201).json(newSchedule);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
 router.get('/getSchedule', async(req, res)=>{
     try{
         const schedul = await schedule.find();
@@ -75,28 +96,46 @@ router.get('/getSchedule', async(req, res)=>{
   //   }
   // });
 
-  router.get('/getschedulebyPatient', verifyToken, async (req, res) =>{
-    
-    try{
-        const schedul= await schedule.find();
-        if(schedul.length>0){
-            
-            const scheduleByName = await Promise.all(schedul.map(async sc => {
-                const doctor = await Signup.findOne({email: sc.doctorName });
-                return {
-                    ...sc._doc,
-                    doctorName: doctor.firstName + " " + doctor.lastName
-                };
-       
-            }));  
-            res.status(200).json({ message:"Doctor schedules to patients:",data: scheduleByName });
+  router.get('/getschedulebyPatient', verifyToken, async (req, res) => {
+    try {
+        // Lookup schedule and join with Signup collection
+        const scheduleWithDoctorInfo = await schedule.aggregate([
+            {
+                $lookup: {
+                    from: 'schedule', // The collection name in MongoDB
+                    localField: 'doctorName',
+                    foreignField: 'firstName', // Ensure this is correct, might need tweaking
+                    as: 'doctorInfo'
+                }
+            },
+            {
+                $unwind: {
+                    path: '$doctorInfo',
+                    preserveNullAndEmptyArrays: true
+                }
+            },
+            {
+                $project: {
+                    doctorName: { $concat: ['$doctorInfo.firstName', ' ', '$doctorInfo.lastName'] },
+                    availableDays: 1,
+                    startTime: 1,
+                    endTime: 1,
+                    mobileNumber: 1,
+                    sex: 1
+                }
+            }
+        ]);
+
+        if (scheduleWithDoctorInfo.length > 0) {
+            res.status(200).json({ message: "Doctor schedules to patients:", data: scheduleWithDoctorInfo });
+        } else {
+            res.status(404).json({ message: "No schedules found" });
         }
-        
-    }catch(error)
-    {
-        res.status(500).json({ message: 'something is error', error:error.message });
+    } catch (error) {
+        res.status(500).json({ message: 'Something went wrong', error: error.message });
     }
-  });
+});
+
 
   router.put('/updateschedule/:id',verifyToken, async (req, res) => {
     try {

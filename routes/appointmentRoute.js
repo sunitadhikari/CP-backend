@@ -6,30 +6,66 @@ const verifyToken = require('../middleware');
 const Prescription = require('../models/appPrescription.model');
 const Schedule = require('../models/scheduleModel');
 
+// router.post('/postAppointment', verifyToken, async (req, res) => {
+//     const email = req.user.email;
+//     const username = req.user.username;
+//     const {departmentName, doctorname, date, time, phone, problem } = req.body;
+    
+//     const appointment = new appointments({
+//         username,
+//         email,
+//         departmentName,
+//         doctorname,
+//         date,
+//         // time,
+//         phone,
+//         problem,
+//         isPaid: false
+//       });
+    
+//       try {
+//         const newAppointment = await appointment.save();
+//         res.status(201).json(newAppointment);
+//       } catch (err) {
+//         res.status(400).json({ message: err.message });
+//       }
+//     });
 router.post('/postAppointment', verifyToken, async (req, res) => {
-    const email = req.user.email;
-    const username = req.user.username;
-    const {departmentName, doctorname, date, time, phone, problem } = req.body;
-    
-    const appointment = new appointments({
-        username,
-        email,
-        departmentName,
-        doctorname,
-        date,
-        // time,
-        phone,
-        problem,
-        isPaid: false
+  const email = req.user.email;
+  const username = req.user.username;
+  const { departmentName, doctorname, date, phone, problem } = req.body;
+
+  try {
+      // Check if an appointment already exists with the same doctor and date for the user
+      const existingAppointment = await appointments.findOne({
+          username: username,
+          doctorname: doctorname,
+          date: date
       });
-    
-      try {
-        const newAppointment = await appointment.save();
-        res.status(201).json(newAppointment);
-      } catch (err) {
-        res.status(400).json({ message: err.message });
+
+      if (existingAppointment) {
+          return res.status(400).json({ message: 'You have already booked an appointment with this doctor on this date.' });
       }
-    });
+
+      // If no existing appointment, create a new one
+      const appointment = new appointments({
+          username,
+          email,
+          departmentName,
+          doctorname,
+          date,
+          phone,
+          problem,
+          isPaid: false
+      });
+
+      const newAppointment = await appointment.save();
+      res.status(201).json(newAppointment);
+  } catch (err) {
+      res.status(400).json({ message: err.message });
+  }
+});
+
     router.get('/paidAppointments', verifyToken, async (req, res) => {
       try {
         const paidAppointments = await appointments.find({ isPaid: true });
@@ -72,32 +108,68 @@ router.post('/postAppointment', verifyToken, async (req, res) => {
 //     }
 // });
 
-
 router.get('/appointmentsByEmail', verifyToken, async (req, res) => {
   try {
       const email = req.user.email; // Ensure the token contains the email
 
       const userAppointments = await appointments.find({ email });
 
-      if (userAppointments.length<0 && userAppointments.length==0) { 
+      if (!userAppointments || userAppointments.length === 0) { 
           return res.status(404).json({ message: 'No appointments found for this user' });
       }
-      const appointmentByName = await Promise.all(userAppointments.map(async appoint => {
-        const doctor = await Signup.findOne({email: appoint.doctorname });
-        const schedule = await Schedule.findOne({doctorName:appoint.doctorname})
-        return {
-            ...appoint._doc,
-            doctorname: doctor.firstName + " " + doctor.lastName,
-            doctorSchedule: schedule
-        };
 
-    }));  
+      const appointmentByName = await Promise.all(userAppointments.map(async (appoint) => {
+        const doctor = await Signup.findOne({ email: appoint.doctorname });
+
+        if (!doctor) {
+          // Handle case where doctor is not found
+          return {
+            ...appoint._doc,
+            doctorname: 'Unknown Doctor',
+            doctorSchedule: null
+          };
+        }
+
+        const schedule = await Schedule.findOne({ doctorName: appoint.doctorname });
+        return {
+          ...appoint._doc,
+          doctorname: doctor.firstName + " " + doctor.lastName,
+          doctorSchedule: schedule || 'No schedule available' // Handle case where schedule is not found
+        };
+      }));
+
       res.json({ appointmentByName });
   } catch (error) {
       console.log(error);
       res.status(500).json({ message: 'Internal server error' });
   }
 });
+
+// router.get('/appointmentsByEmail', verifyToken, async (req, res) => {
+//   try {
+//       const email = req.user.email; // Ensure the token contains the email
+
+//       const userAppointments = await appointments.find({ email });
+
+//       if (userAppointments.length<0 && userAppointments.length==0) { 
+//           return res.status(404).json({ message: 'No appointments found for this user' });
+//       }
+//       const appointmentByName = await Promise.all(userAppointments.map(async appoint => {
+//         const doctor = await Signup.findOne({email: appoint.doctorname });
+//         const schedule = await Schedule.findOne({doctorName:appoint.doctorname})
+//         return {
+//             ...appoint._doc,
+//             doctorname: doctor.firstName + " " + doctor.lastName,
+//             doctorSchedule: schedule
+//         };
+
+//     }));  
+//       res.json({ appointmentByName });
+//   } catch (error) {
+//       console.log(error);
+//       res.status(500).json({ message: 'Internal server error' });
+//   }
+// });
 
 
 router.post('/updatePaymentStatus', verifyToken, async (req, res) => {

@@ -38,7 +38,7 @@ router.get('/getDoctor:id',verifyToken, async (req, res) => {
 
 router.put('/updateDoctor:id',verifyToken, async (req, res) => {
   const updates = Object.keys(req.body);
-  const allowedUpdates = ['firstName', 'lastName', 'email', 'password', 'department', 'picture', 'dob', 'sex', 'bloodGroup', 'designation', 'address', 'phoneNo', 'mobileNo', 'careerTitle', 'biography', 'status'];
+  const allowedUpdates = ['firstName', 'lastName', 'email', 'password', 'department', 'image', 'dob', 'sex', 'bloodGroup', 'designation', 'address', 'phoneNo', 'mobileNo', 'careerTitle', 'biography', 'status'];
   const isValidOperation = updates.every((update) => allowedUpdates.includes(update));
   if (!isValidOperation) {
     return res.status(400).send({ error: 'Invalid updates!' });

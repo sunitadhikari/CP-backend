@@ -14,12 +14,19 @@ router.get('/getwards', async (req, res) => {
 });
 
 // router.post('/postWards', async (req, res) => {
-//   const ward = new Ward({
-//     wardType: req.body.wardType,
-//     capacity: req.body.capacity,
-//   });
+//   const wardType = req.body.wardType.toLowerCase(); // Convert to lowercase
 
 //   try {
+//     const existingWard = await Ward.findOne({ wardType: wardType });
+//     if (existingWard) {
+//       return res.status(400).json({ message: 'Ward type already exists' });
+//     }
+
+//     const ward = new Ward({
+//       wardType: wardType,
+//       capacity: req.body.capacity,
+//     });
+
 //     const newWard = await ward.save();
 //     res.status(201).json(newWard);
 //   } catch (err) {
@@ -27,10 +34,9 @@ router.get('/getwards', async (req, res) => {
 //   }
 // });
 router.post('/postWards', async (req, res) => {
-  // const wardType = req.body.wardType.toLowerCase(); 
-  const wardType = req.body.wardType // Convert to lowercase
+  const wardType = req.body.wardType.toLowerCase(); // Convert to lowercase
+  console.log('Converted wardType:', wardType); // Debug statement
 
-  // Check if wardTy already exists
   try {
     const existingWard = await Ward.findOne({ wardType: wardType });
     if (existingWard) {
@@ -48,6 +54,8 @@ router.post('/postWards', async (req, res) => {
     res.status(400).json({ message: err.message });
   }
 });
+
+
 router.put('/editWard/:id', async (req, res) => {
   try {
     const ward = await Ward.findById(req.params.id);
@@ -65,19 +73,32 @@ router.put('/editWard/:id', async (req, res) => {
   }
 });
 
+// router.delete('/deleteWard/:id', async (req, res) => {
+//   try {
+//     const ward = await Ward.findById(req.params.id);
+//     if (!ward) {
+//       return res.status(404).json({ message: 'Ward not found' });
+//     }
+
+//     // await ward.remove();
+//     res.json({ message: 'Ward deleted' });
+//   } catch (err) {
+//     res.status(500).json({ message: err.message });
+//   }
+// });
 router.delete('/deleteWard/:id', async (req, res) => {
   try {
-    const ward = await Ward.findById(req.params.id);
+    const ward = await Ward.findByIdAndDelete(req.params.id);
     if (!ward) {
       return res.status(404).json({ message: 'Ward not found' });
     }
 
-    // await ward.remove();
     res.json({ message: 'Ward deleted' });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 });
+
 router.get('/bedsStatus', async (req, res) => {
   try {
     const ward = req.query.ward;

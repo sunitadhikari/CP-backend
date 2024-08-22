@@ -15,6 +15,7 @@ router.get('/beds', async (req, res) => {
       res.status(400).json({ error: err.message });
     }
   });
+  // pull agaian
 router.get('/getCountbeds', async (req, res) => {
   try {
     const occupiedBeds = await Bed.countDocuments({ occupied: true });
@@ -66,26 +67,53 @@ router.put('/beds/:bedNumber/update-occupied-status', async (req, res) => {
       res.status(500).json({ error: 'Failed to update bed status' });
     }
   });
-  router.post('/add-bed', (req, res) => {
-    const { ward, bedNumbers, charges,occupied} = req.body;
+  // router.post('/add-bed', (req, res) => {
+  //   const { ward, bedNumbers, charges,occupied} = req.body;
     
-    const newBed = new Bed({
-      ward,
-      bedNumbers,
-      charges,
-      occupied
-    });
+  //   const newBed = new Bed({
+  //     ward,
+  //     bedNumbers,
+  //     charges,
+  //     occupied
+  //   });
   
-    newBed.save()
-      .then(savedBed => {
-        res.status(201).json(savedBed);
-      })
-      .catch(error => {
-        console.error('Error saving bed:', error);
-        res.status(500).json({ error: 'Failed to save bed' });
+  //   newBed.save()
+  //     .then(savedBed => {
+  //       res.status(201).json(savedBed);
+  //     })
+  //     .catch(error => {
+  //       console.error('Error saving bed:', error);
+  //       res.status(500).json({ error: 'Failed to save bed' });
+  //     });
+  // });
+  router.post('/add-bed', async (req, res) => {
+    const { ward, bedNumbers, charges, occupied } = req.body;
+  
+    try {
+      // Check if the bed with the same ward and bed number already exists
+      const existingBed = await Bed.findOne({ ward, bedNumbers });
+  
+      if (existingBed) {
+        return res.status(400).json({ error: 'Bed with the same ward and bed number already exists' });
+      }
+  
+      // Create a new bed if it doesn't exist
+      const newBed = new Bed({
+        ward,
+        bedNumbers,
+        charges,
+        occupied
       });
+  
+      const savedBed = await newBed.save();
+      res.status(201).json(savedBed);
+  
+    } catch (error) {
+      console.error('Error saving bed:', error);
+      res.status(500).json({ error: 'Failed to save bed' });
+    }
   });
-
+  
   router.put('/beds/:id/occupy', async (req, res) => {
     try {
       const bed = await Bed.findById(req.params.id);
