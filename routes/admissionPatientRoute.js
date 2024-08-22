@@ -30,10 +30,19 @@ router.get('/patients', async (req, res) => {
       }
     });
 
-    const patients = await Patient.find();
+    const patient = await Patient.find();
     const patientCount = await Patient.countDocuments({});
 
-    res.json({ dailyAdmittedPatients, patients, patientCount });
+    const patients = await Promise.all(patient.map(async admit => {
+                  
+      const doctor = await Signup.findOne({ email: admit.checkedBy });
+      return {
+          ...admit._doc,
+          checkedBy: doctor.firstName + " " + doctor.lastName
+      };
+  }));  
+
+    res.json({ dailyAdmittedPatients,patients, patientCount });
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
