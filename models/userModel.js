@@ -4,8 +4,9 @@ const userSchema = new mongoose.Schema({
     lastName: { type: String },
     phoneNo: { type: String },
     mobileNo:{type:String},
+    dob:{type:String},
     department:{type:String},
-    picture: {type:String},
+    image: {type:String},
     sex:{type:String},
     bloodGroup:{type:String},
     address: {type:String},
@@ -13,6 +14,7 @@ const userSchema = new mongoose.Schema({
     careerTitle:{type:String},
     biography: {type:String},
     status:{type:String},
+    image:{type:String},
     email: {
         type: String,
         unique: true
