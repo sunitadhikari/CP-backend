@@ -65,6 +65,26 @@ router.post('/postAppointment', verifyToken, async (req, res) => {
       res.status(400).json({ message: err.message });
   }
 });
+router.put('/updateAppointment/:id', verifyToken, async (req, res) => {
+  const { id } = req.params;
+  const { departmentName, doctorname, date, phone, problem } = req.body;
+
+  try {
+    const updatedAppointment = await appointments.findByIdAndUpdate(
+      id,
+      { departmentName, doctorname, date, phone, problem },
+      { new: true }
+    );
+
+    if (!updatedAppointment) {
+      return res.status(404).json({ message: 'Appointment not found' });
+    }
+
+    res.status(200).json(updatedAppointment);
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+});
 
     router.get('/paidAppointments', verifyToken, async (req, res) => {
       try {
