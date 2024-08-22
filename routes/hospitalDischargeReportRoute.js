@@ -1,18 +1,49 @@
 const express = require('express');
 const router = express.Router();
 const HospitalDischargeReport = require('../models/hospitalDischargeReportModel');
+const Bed = require('../models/bedModel'); 
+
 const verifyToken=require('../middleware');
 
 // POST a new hospital discharge report
+// router.post('/hospitalDischargeReport', verifyToken, async (req, res) => {
+//     try {
+//         const report = new HospitalDischargeReport(req.body);
+//         await report.save();
+//         res.status(201).json({messge:"Hospital Discharge Report saved successfully",report});
+//     } catch (error) {
+//         res.status(500).json({ message: error.message });
+//     }
+// });
+ 
+
 router.post('/hospitalDischargeReport', verifyToken, async (req, res) => {
     try {
+        // Create and save the discharge report
         const report = new HospitalDischargeReport(req.body);
         await report.save();
-        res.status(201).json({messge:"Hospital Discharge Report saved successfully",report});
+
+        // Update the bed status
+        const { ward, bedNumber } = req.body; // Ensure req.body contains ward and bedNumber
+
+        const bed = await Bed.findOne({ ward, bedNumbers: bedNumber });
+        if (!bed) {
+            return res.status(404).json({ message: 'Bed not found' });
+        }
+
+        bed.occupied = false;
+        await bed.save();
+
+        res.status(201).json({
+            message: 'Hospital Discharge Report saved successfully and bed status updated',
+            report
+        });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 });
+
+module.exports = router;
 
 router.get('/gethospitalDischargeReport', verifyToken, async(req,res)=>{
     try{
