@@ -75,14 +75,44 @@ router.post('/postAppointment', verifyToken, async (req, res) => {
         res.status(500).json({ message: 'Error fetching paid appointments', error });
       }
     });
+    // router.get('/appointments', async (req, res) => {
+    //   try {
+    //     const appointmentList = await appointments.find();
+    //     res.send(appointmentList);
+    //   } catch (error) {
+    //     res.status(400).send(error);
+    //   }
+    // });
+
     router.get('/appointments', async (req, res) => {
       try {
-        const appointmentList = await appointments.find();
-        res.send(appointmentList);
+        const userAppointments = await appointments.find();
+
+      if (!userAppointments || userAppointments.length === 0) { 
+          return res.status(404).json({ message: 'No appointments found for this user' });
+      }
+      const appointmentByName = await Promise.all(userAppointments.map(async (appoint) => {
+        const doctor = await Signup.findOne({ email: appoint.doctorname });
+        if(!doctor){
+          res.status(404).send("Doctor not found!");
+        }
+        const patient = await Signup.findOne({email: appoint.email });
+        if(!patient){
+          res.status(404).send("Patient not found!");
+        }
+        return {
+          ...appoint._doc,
+          doctorname: doctor.firstName + " " + doctor.lastName,
+          email:patient.firstName + " " + patient.lastName
+      };
+    }));  
+    res.status(200).send(appointmentByName);           
       } catch (error) {
-        res.status(400).send(error);
+        res.status(500).json({ message: 'Error fetching appointments', error:error.message });
       }
     });
+
+
 // router.get('/appointmentsByEmail', verifyToken, async (req, res) => {
 //     try {
 //         const email = req.user.email; // Ensure the token contains the email
