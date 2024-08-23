@@ -9,6 +9,7 @@ const patientSchema = new mongoose.Schema({
   gender: { type: String, enum: ['Male', 'Female', 'Other'], required: true },
   contactNumber: { type: String, required: true },
   address: { type: String },
+  email:{type:String},
   medicalHistory: { type: String },
   department: { type: String },
   ward: { type: String },
