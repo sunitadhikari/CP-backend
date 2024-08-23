@@ -1,51 +1,117 @@
 const express = require('express');
 const router = express.Router();
-const Schedule = require('../models/scheduleModel');
+const schedule = require('../models/scheduleModel');
 const verifyToken=require('../middleware');
 const Signup=require('../models/userModel');
 
-// router.post('/postSchedule', async(req, res)=>{
-//     try{
-//        const schedules = new schedule(req.body);
-//        await schedules.save();
-//        res.status(201).json(schedules);
+
+// router.post('/postSchedule', async (req, res) => {
+//   try {
+//     const { doctorName, availableDays } = req.body;
+
+//     // Check if a schedule already exists for the same doctor with the same availableDays
+//     const existingSchedule = await schedule.findOne({ doctorName, availableDays });
+
+//     if (existingSchedule) {
+//       return res.status(400).json({ message: 'Schedule already exists for this doctor on the specified day.' });
 //     }
-//     catch(err){
-//      res.status(500).json({message:err.message})
+
+//     // If no such schedule exists, proceed to save the new schedule
+//     const newSchedule = new schedule(req.body);
+//     await newSchedule.save();
+
+//     res.status(201).json(newSchedule);
+//   } catch (err) {
+//     res.status(500).json({ message: err.message });
+//   }
+// });
+// router.post('/postSchedule', async (req, res) => {
+//   try {
+//     const { doctorName, availableDays, date, startTime, endTime } = req.body;
+
+//     // Format the date to yyyy-mm-dd (remove time portion)
+//     const formattedDate = new Date(date).toISOString().split('T')[0];
+
+//     const existingSchedule = await schedule.findOne({ doctorName, availableDays, date: formattedDate });
+
+//     if (existingSchedule) {
+//       return res.status(400).json({ message: 'Schedule already exists for this doctor on the specified day.' });
 //     }
-// })
+
+//     // Create and save the new schedule
+//     const newSchedule = new schedule({
+//       doctorName,
+//       availableDays,
+//       date: formattedDate,  // Save formatted date as string
+//       startTime,
+//       endTime
+//     });
+
+//     await newSchedule.save();
+//     res.status(201).json(newSchedule);
+//   } catch (err) {
+//     res.status(500).json({ message: err.message });
+//   }
+// });
+
 router.post('/postSchedule', async (req, res) => {
   try {
-    const { doctorName, availableDays } = req.body;
+    const { doctorName, availableDays, date, startTime, endTime } = req.body;
 
-    // Check if a schedule already exists for the same doctor with the same availableDays
-    const existingSchedule = await Schedule.findOne({ doctorName, availableDays });
+    // Check if the schedule already exists for the same doctor on the same date
+    const existingSchedule = await schedule.findOne({
+      doctorName,
+      date
+    });
 
     if (existingSchedule) {
       return res.status(400).json({ message: 'Schedule already exists for this doctor on the specified day.' });
     }
 
-    // If no such schedule exists, proceed to save the new schedule
-    const newSchedule = new Schedule(req.body);
-    await newSchedule.save();
+    // Create and save the new schedule
+    const newSchedule = new schedule({
+      doctorName,
+      availableDays,
+      date,  // Save date in "YYYY-MM-DD" format
+      startTime,
+      endTime
+    });
 
+    await newSchedule.save();
     res.status(201).json(newSchedule);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 });
 
+// router.post('/postSchedule', async (req, res) => {
+//   try {
+//     const { doctorName, availableDays, date, startTime, endTime } = req.body;
+
+//     // Check if a schedule already exists for the specified doctor on the specified day
+//     const existingSchedule = await schedule.findOne({
+//       doctorName: doctorName,
+//       availableDays: availableDays,
+//       date: date
+//     });
+
+//     if (existingSchedule) {
+//       return res.status(400).json({ message: 'Schedule already exists for this doctor on the specified day.' });
+//     }
+
+//     // If no such schedule exists, proceed to save the new schedule
+//     const newSchedule = new schedule(req.body);
+//     await newSchedule.save();
+
+//     res.status(201).json(newSchedule);
+//   } catch (err) {
+//     res.status(500).json({ message: err.message });
+//   }
+// });
+
 router.get('/getSchedule', async(req, res)=>{
     try{
-        const schedule = await Schedule.find();
-        const schedul = await Promise.all(schedule.map(async scdl => {
-                  
-          const doctorname = await Signup.findOne({ email: scdl.doctorName });
-          return {
-              ...scdl._doc,
-              doctorName: doctorname.firstName + " " + doctorname.lastName
-          };
-      }));  
+        const schedul = await schedule.find();
         res.json(schedul);
     }
     catch(err){
@@ -65,7 +131,7 @@ router.get('/getSchedule', async(req, res)=>{
             return res.status(404).json({ message: 'User not found' });
         }
         
-        const schedules = await Schedule.find({ doctorName: user.email});
+        const schedules = await schedule.find({ doctorName: user.email});
         
         if (schedules && schedules.length > 0) {
             res.status(200).json({ message: "Doctor schedule for doctor:", data: schedules });
@@ -107,7 +173,7 @@ router.get('/getSchedule', async(req, res)=>{
   router.get('/getschedulebyPatient', verifyToken, async (req, res) => {
     try {
         // Lookup schedule and join with Signup collection
-        const scheduleWithDoctorInfo = await Schedule.aggregate([
+        const scheduleWithDoctorInfo = await schedule.aggregate([
             {
                 $lookup: {
                     from: 'schedule', // The collection name in MongoDB
@@ -149,7 +215,7 @@ router.get('/getSchedule', async(req, res)=>{
     try {
         const { doctorName, availableDays, startTime, endTime, mobileNumber, sex  }=req.body;
 
-      const schedul = await Schedule.findByIdAndUpdate(req.params.id, { doctorName, availableDays, startTime, endTime, mobileNumber, sex }, { new: true });
+      const schedul = await schedule.findByIdAndUpdate(req.params.id, { doctorName, availableDays, startTime, endTime, mobileNumber, sex }, { new: true });
       if (!schedul) {
         return res.status(404).send({message:"Schedule not found"});
       }
@@ -162,7 +228,7 @@ router.get('/getSchedule', async(req, res)=>{
 
   router.delete('/delschedule/:id',verifyToken, async (req, res) => {
     try {
-      const schedul = await Schedule.findByIdAndDelete(req.params.id);
+      const schedul = await schedule.findByIdAndDelete(req.params.id);
       if (!schedul) {
         return res.status(404).send({message:"Schedule not found"});
       }

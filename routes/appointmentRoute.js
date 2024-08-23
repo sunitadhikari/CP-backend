@@ -6,65 +6,93 @@ const verifyToken = require('../middleware');
 const Prescription = require('../models/appPrescription.model');
 const Schedule = require('../models/scheduleModel');
 
+
 // router.post('/postAppointment', verifyToken, async (req, res) => {
-//     const email = req.user.email;
-//     const username = req.user.username;
-//     const {departmentName, doctorname, date, time, phone, problem } = req.body;
-    
-//     const appointment = new appointments({
-//         username,
-//         email,
-//         departmentName,
-//         doctorname,
-//         date,
-//         // time,
-//         phone,
-//         problem,
-//         isPaid: false
+//   const email = req.user.email;
+//   const username = req.user.username;
+//   const { departmentName, doctorname, date, phone, problem } = req.body;
+
+//   try {
+//       // Check if an appointment already exists with the same doctor and date for the user
+//       const existingAppointment = await appointments.findOne({
+//           username: username,
+//           doctorname: doctorname,
+//           date: date
 //       });
-    
-//       try {
-//         const newAppointment = await appointment.save();
-//         res.status(201).json(newAppointment);
-//       } catch (err) {
-//         res.status(400).json({ message: err.message });
+
+//       if (existingAppointment) {
+//           return res.status(400).json({ message: 'You have already booked an appointment with this doctor on this date.' });
 //       }
-//     });
+
+//       // If no existing appointment, create a new one
+//       const appointment = new appointments({
+//           username,
+//           email,
+//           departmentName,
+//           doctorname,
+//           date,
+//           phone,
+//           problem,
+//           isPaid: false
+//       });
+
+//       const newAppointment = await appointment.save();
+//       res.status(201).json(newAppointment);
+//   } catch (err) {
+//       res.status(400).json({ message: err.message });
+//   }
+// });
 router.post('/postAppointment', verifyToken, async (req, res) => {
   const email = req.user.email;
   const username = req.user.username;
   const { departmentName, doctorname, date, phone, problem } = req.body;
 
   try {
-      // Check if an appointment already exists with the same doctor and date for the user
-      const existingAppointment = await appointments.findOne({
-          username: username,
-          doctorname: doctorname,
-          date: date
-      });
+    // Check if the user already has an appointment with the same doctor on the same date
+    const existingAppointment = await appointments.findOne({
+      username,
+      doctorname,
+      date
+    });
 
-      if (existingAppointment) {
-          return res.status(400).json({ message: 'You have already booked an appointment with this doctor on this date.' });
-      }
+    if (existingAppointment) {
+      return res.status(400).json({ message: 'You have already booked an appointment with this doctor on this date.' });
+    }
 
-      // If no existing appointment, create a new one
-      const appointment = new appointments({
-          username,
-          email,
-          departmentName,
-          doctorname,
-          date,
-          phone,
-          problem,
-          isPaid: false
-      });
+    // Convert the date to a Date object and get the day of the week
+    const dateObject = new Date(date);
+    const dayOfWeek = dateObject.getDay(); // 0 for Sunday, 1 for Monday, etc.
 
-      const newAppointment = await appointment.save();
-      res.status(201).json(newAppointment);
+    // Check if the doctor is available on the requested date
+    const doctorSchedule = await Schedule.findOne({
+      doctorName: doctorname,
+      date
+    });
+
+    if (!doctorSchedule) {
+      return res.status(400).json({ message: 'The doctor is not available on the selected date.' });
+    }
+
+    // If no existing appointment and doctor is available, create the appointment
+    const appointment = new appointments({
+      username,
+      email,
+      departmentName,
+      doctorname,
+      date,
+      phone,
+      problem,
+      isPaid: false
+    });
+
+    const newAppointment = await appointment.save();
+    res.status(201).json(newAppointment);
   } catch (err) {
-      res.status(400).json({ message: err.message });
+    res.status(400).json({ message: err.message });
   }
 });
+
+
 router.put('/updateAppointment/:id', verifyToken, async (req, res) => {
   const { id } = req.params;
   const { departmentName, doctorname, date, phone, problem } = req.body;
