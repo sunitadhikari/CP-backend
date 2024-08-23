@@ -4,36 +4,110 @@ const schedule = require('../models/scheduleModel');
 const verifyToken=require('../middleware');
 const Signup=require('../models/userModel');
 
-// router.post('/postSchedule', async(req, res)=>{
-//     try{
-//        const schedules = new schedule(req.body);
-//        await schedules.save();
-//        res.status(201).json(schedules);
+
+// router.post('/postSchedule', async (req, res) => {
+//   try {
+//     const { doctorName, availableDays } = req.body;
+
+//     // Check if a schedule already exists for the same doctor with the same availableDays
+//     const existingSchedule = await schedule.findOne({ doctorName, availableDays });
+
+//     if (existingSchedule) {
+//       return res.status(400).json({ message: 'Schedule already exists for this doctor on the specified day.' });
 //     }
-//     catch(err){
-//      res.status(500).json({message:err.message})
+
+//     // If no such schedule exists, proceed to save the new schedule
+//     const newSchedule = new schedule(req.body);
+//     await newSchedule.save();
+
+//     res.status(201).json(newSchedule);
+//   } catch (err) {
+//     res.status(500).json({ message: err.message });
+//   }
+// });
+// router.post('/postSchedule', async (req, res) => {
+//   try {
+//     const { doctorName, availableDays, date, startTime, endTime } = req.body;
+
+//     // Format the date to yyyy-mm-dd (remove time portion)
+//     const formattedDate = new Date(date).toISOString().split('T')[0];
+
+//     const existingSchedule = await schedule.findOne({ doctorName, availableDays, date: formattedDate });
+
+//     if (existingSchedule) {
+//       return res.status(400).json({ message: 'Schedule already exists for this doctor on the specified day.' });
 //     }
-// })
+
+//     // Create and save the new schedule
+//     const newSchedule = new schedule({
+//       doctorName,
+//       availableDays,
+//       date: formattedDate,  // Save formatted date as string
+//       startTime,
+//       endTime
+//     });
+
+//     await newSchedule.save();
+//     res.status(201).json(newSchedule);
+//   } catch (err) {
+//     res.status(500).json({ message: err.message });
+//   }
+// });
+
 router.post('/postSchedule', async (req, res) => {
   try {
-    const { doctorName, availableDays } = req.body;
+    const { doctorName, availableDays, date, startTime, endTime } = req.body;
 
-    // Check if a schedule already exists for the same doctor with the same availableDays
-    const existingSchedule = await schedule.findOne({ doctorName, availableDays });
+    // Check if the schedule already exists for the same doctor on the same date
+    const existingSchedule = await schedule.findOne({
+      doctorName,
+      date
+    });
 
     if (existingSchedule) {
       return res.status(400).json({ message: 'Schedule already exists for this doctor on the specified day.' });
     }
 
-    // If no such schedule exists, proceed to save the new schedule
-    const newSchedule = new schedule(req.body);
-    await newSchedule.save();
+    // Create and save the new schedule
+    const newSchedule = new schedule({
+      doctorName,
+      availableDays,
+      date,  // Save date in "YYYY-MM-DD" format
+      startTime,
+      endTime
+    });
 
+    await newSchedule.save();
     res.status(201).json(newSchedule);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 });
+
+// router.post('/postSchedule', async (req, res) => {
+//   try {
+//     const { doctorName, availableDays, date, startTime, endTime } = req.body;
+
+//     // Check if a schedule already exists for the specified doctor on the specified day
+//     const existingSchedule = await schedule.findOne({
+//       doctorName: doctorName,
+//       availableDays: availableDays,
+//       date: date
+//     });
+
+//     if (existingSchedule) {
+//       return res.status(400).json({ message: 'Schedule already exists for this doctor on the specified day.' });
+//     }
+
+//     // If no such schedule exists, proceed to save the new schedule
+//     const newSchedule = new schedule(req.body);
+//     await newSchedule.save();
+
+//     res.status(201).json(newSchedule);
+//   } catch (err) {
+//     res.status(500).json({ message: err.message });
+//   }
+// });
 
 router.get('/getSchedule', async(req, res)=>{
     try{
