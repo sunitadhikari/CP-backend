@@ -32,25 +32,49 @@ router.post('/prescriptions', async (req, res) => {
 });
 
 
+// router.get('/getprescriptions', verifyToken, async (req, res) => {
+//   try {
+//     const symptoms = await Symptoms.find({patient:req.user.email});
+//     if (!symptoms || symptoms.length === 0) {
+//       return res.status(404).send('No symptoms for this patient');
+//     }
+//     const symptomIds = symptoms.map(symptom => symptom._id);
+
+//     const prescriptions = await Prescription.find({ patientId: { $in: symptomIds } });
+    
+//     if (!prescriptions || prescriptions.length === 0) {
+//       return res.status(404).json({ message: "No prescriptions found for this user" });
+//     }
+
+//     res.status(200).json(prescriptions);
+//   } catch (error) {
+//     res.status(400).json({ message: error.message });
+//   }
+// });
+
+
 router.get('/getprescriptions', verifyToken, async (req, res) => {
   try {
-    const symptoms = await Symptoms.find({patient:req.user.email});
+    const symptoms = await Symptoms.find({ patient: req.user.email });
     if (!symptoms || symptoms.length === 0) {
       return res.status(404).send('No symptoms for this patient');
     }
-    const symptomIds = symptoms.map(symptom => symptom._id);
 
-    const prescriptions = await Prescription.find({ patientId: { $in: symptomIds } });
-    
-    if (!prescriptions || prescriptions.length === 0) {
-      return res.status(404).json({ message: "No prescriptions found for this user" });
-    }
+    const result = await Promise.all(symptoms.map(async (symptom) => {
+      const prescriptions = await Prescription.find({ patientId: symptom._id });
+      return {
+        Symptom:symptom.symptoms,
+        prescriptions: prescriptions.length > 0 ? prescriptions : 'No prescriptions found for this symptom'
+      };
+    }));
 
-    res.status(200).json(prescriptions);
+    res.status(200).json(result);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
 });
+
+
 
 router.get('/getPescribe', async (req, res) => {
   try {
