@@ -21,4 +21,12 @@ router.get('/admit-patient-payments', async (req, res) => {
       res.status(500).json({ message: 'Error retrieving payment data', error });
     }
   });
+  router.get('/admit-patient-payments/count', async (req, res) => {
+    try {
+      const count = await Payment.countDocuments(); // Get the count of payment records
+      res.status(200).json({ count });
+    } catch (error) {
+      res.status(500).json({ message: 'Error retrieving payment count', error });
+    }
+  });
 module.exports = router;
