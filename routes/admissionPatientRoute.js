@@ -219,5 +219,27 @@ router.get('/admittedpatientbyDepartment', verifyToken, async(req,res)=>{
     return res.status(500).send({message:"Internal Server error!",error:error.message});
   }
 })
+router.get('/admittedpatientbyDepartment/count', verifyToken, async (req, res) => {
+  try {
+    const { email } = req.user;
+    const doctor = await Signup.findOne({ email });
+
+    if (!doctor) {
+      return res.status(404).send("Doctor not found!");
+    }
+
+    // Find the count of patients in the doctor's department
+    const department = doctor.department;
+    const patientCount = await Patient.countDocuments({ department });
+
+    res.status(200).json({
+      message: `Patient count for this department:`,
+      count: patientCount
+    });
+  } catch (error) {
+    return res.status(500).send({ message: "Internal Server Error!", error: error.message });
+  }
+});
+
 
 module.exports = router;

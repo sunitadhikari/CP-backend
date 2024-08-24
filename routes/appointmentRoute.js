@@ -50,7 +50,7 @@ router.post('/postAppointment', verifyToken, async (req, res) => {
   try {
     // Check if the user already has an appointment with the same doctor on the same date
     const existingAppointment = await appointments.findOne({
-      username,
+      email,
       doctorname,
       date
     });

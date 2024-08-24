@@ -143,7 +143,31 @@ router.get('/getSymptomsbyEmail', verifyToken, async (req, res) => {
         res.status(500).json({ messgae: 'something is error', error });
     }
   })
+// In your Express backend
 
+router.get('/getTotalSymptomsCount', verifyToken, async (req, res) => {
+    try {
+      const { email } = req.user;
+  
+      // Find the user based on email
+      const user = await Signup.findOne({ email });
+      
+      if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+     
+      // Count the number of symptoms associated with the doctor
+      const symptomCount = await Symptoms.countDocuments({ doctor: email });
+      
+      res.json({
+        message: 'Total number of symptoms for this doctor:',
+        count: symptomCount
+      });
+    } catch (error) {
+      res.status(500).json({ message: 'Internal Server Error', error: error.message });
+    }
+  });
+  
   //for reception
 router.put('/assignDoctor/:id',verifyToken,async(req,res)=>{
     try{

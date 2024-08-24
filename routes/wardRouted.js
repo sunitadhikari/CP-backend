@@ -12,6 +12,19 @@ router.get('/getwards', async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 });
+router.get('/getwards/count', async (req, res) => {
+  try {
+    // Get the count of all ward documents
+    const wardCount = await Ward.countDocuments({});
+
+    res.status(200).json({
+      message: 'Total number of wards:',
+      count: wardCount
+    });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
 
 // router.post('/postWards', async (req, res) => {
 //   const wardType = req.body.wardType.toLowerCase(); // Convert to lowercase
