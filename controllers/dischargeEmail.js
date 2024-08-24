@@ -34,7 +34,7 @@ async function sendDischargeEmail(patientEmail, report) {
             Thank you for trusting our hospital for your care.
 
             Best regards,
-            Hospital Management
+           Aspatal Hospital Management
         `
     };
 

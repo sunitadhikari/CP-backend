@@ -2,18 +2,47 @@ const express = require('express');
 const router = express.Router();
 const Report = require('../models/reportModel');
 const verifyToken=require('../middleware');
+const { dailyReport } = require('../controllers/dailyEmail'); 
 
 
+
+// router.post('/dailyReport', async (req, res) => {
+//     try {
+//       const report = new Report(req.body);
+//       const savedReport = await report.save();
+//       res.status(201).json(savedReport);
+//     } catch (error) {
+//       res.status(400).json({ message: error.message });
+//     }
+//   });
 router.post('/dailyReport', async (req, res) => {
-    try {
+  try {
+      // Create and save the report
       const report = new Report(req.body);
       const savedReport = await report.save();
+
+      // Send the email
+      await dailyReport(savedReport);
+
       res.status(201).json(savedReport);
-    } catch (error) {
+  } catch (error) {
       res.status(400).json({ message: error.message });
-    }
-  });
-  
+  }
+});
+// router.post('/dailyReport', async (req, res) => {
+//   try {
+//       // Create and save the report
+//       const report = new Report(req.body);
+//       const savedReport = await report.save();
+
+//       // Send the email
+//       await dailyReport(savedReport);
+
+//       res.status(201).json(savedReport);
+//   } catch (error) {
+//       res.status(400).json({ message: error.message });
+//   }
+// });
   // Get all reports
   router.get('/getDailyReport', async (req, res) => {
     try {
