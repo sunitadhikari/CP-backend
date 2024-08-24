@@ -7,6 +7,8 @@ const DoctorDischargeReport = require('../models/doctorDischargeReportModel');
 const verifyToken=require('../middleware');
 const Signup = require('../models/userModel');
 const AdmissionPatient= require('../models/admissionPatientModel');
+const { sendDischargeEmail } = require('../controllers/dischargeEmail');
+
 
 
 // POST a new hospital discharge report
@@ -46,68 +48,62 @@ const AdmissionPatient= require('../models/admissionPatientModel');
 //         res.status(500).json({ message: error.message });
 //     }
 // });
-
-// Route for handling hospital discharge report submission
 router.post('/hospitalDischargeReport', verifyToken, async (req, res) => {
     try {
-        // Create and save the discharge report
         const report = new HospitalDischargeReport(req.body);
-        //await report.save();
+        const { patientId, ward, bedNumber, patientEmail } = req.body;
 
-<<<<<<< HEAD
-        // Update the bed status
-        const { ward, bedNumber} = req.body; // Ensure req.body contains ward and bedNumber
-=======
-        // Update the patient document
-        const { patientId } = req.body;
         await DoctorDischargeReport.findByIdAndUpdate(patientId, { dischargeRequest: false });
->>>>>>> 5d2269b310d32c187976d058593a373243b03488
 
-        // Update the bed status
-        const { ward, bedNumber } = req.body;
         const bed = await Bed.findOne({ ward, bedNumbers: bedNumber });
         if (!bed) {
             return res.status(404).json({ message: 'Bed not found' });
         }
-        report.bed_charges=bed.charges;
+
+        report.bed_charges = bed.charges;
         await report.save();
 
         bed.occupied = false;
         await bed.save();
 
+        // Send email after successful report and bed status update
+        await sendDischargeEmail(patientEmail, report);
+
         res.status(201).json({
-            message: 'Hospital Discharge Report saved successfully and bed status updated',
+            message: 'Hospital Discharge Report saved successfully, bed status updated, and email sent',
             report
         });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 });
-
-<<<<<<< HEAD
-=======
+// Route for handling hospital discharge report submission
 // router.post('/hospitalDischargeReport', verifyToken, async (req, res) => {
 //     try {
 //         // Create and save the discharge report
 //         const report = new HospitalDischargeReport(req.body);
-//         await report.save();
+//         //await report.save();
 
 //         // Update the bed status
-//         const { ward, bedNumber, patientId } = req.body; // Ensure req.body contains ward, bedNumber, and patientId
+//         // const { ward, bedNumber} = req.body; // Ensure req.body contains ward and bedNumber
+//         // Update the patient document
+//         const { patientId } = req.body;
+//         await DoctorDischargeReport.findByIdAndUpdate(patientId, { dischargeRequest: false });
 
+//         // Update the bed status
+//         const { ward, bedNumber } = req.body;
 //         const bed = await Bed.findOne({ ward, bedNumbers: bedNumber });
 //         if (!bed) {
 //             return res.status(404).json({ message: 'Bed not found' });
 //         }
+//         report.bed_charges=bed.charges;
+//         await report.save();
 
 //         bed.occupied = false;
 //         await bed.save();
 
-//         // Update dischargeRequest field in the Patient model
-//         await DoctorDischargeReport.findByIdAndUpdate(patientId, { dischargeRequest: false });
-
 //         res.status(201).json({
-//             message: 'Hospital Discharge Report saved successfully, bed status updated, and patient dischargeRequest set to false',
+//             message: 'Hospital Discharge Report saved successfully and bed status updated',
 //             report
 //         });
 //     } catch (error) {
@@ -115,7 +111,6 @@ router.post('/hospitalDischargeReport', verifyToken, async (req, res) => {
 //     }
 // });
 
->>>>>>> 5d2269b310d32c187976d058593a373243b03488
 
 router.get('/gethospitalDischargeReport', verifyToken, async(req,res)=>{
     try{

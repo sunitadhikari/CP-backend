@@ -4,6 +4,7 @@ const hospitalDischargeReportSchema = new mongoose.Schema({
     patientId: { type: mongoose.Schema.Types.ObjectId, ref: 'Patient', required: true }, // Reference to Patient model
     patientName: { type: String, required: true },
     patientAge: { type: Number, required: true },
+    patientEmail: { type: String, required: true },
     patientGender: { type: String, enum: ['Male', 'Female', 'Other'], required: true },
     admissionDate: { type: Date, required: true },
     dischargeDate: { type: Date, required: true },

@@ -9,7 +9,7 @@ const doctorDischargeReportSchema = new mongoose.Schema({
     address: { type: String, required: true },
     medicalHistory: { type: String, required: true },
     department: { type: String, required: true },
-    email: { type: String},
+    patientEmail: { type: String},
     ward: { type: String, required: true },
     bedNumber: { type: String, required: true },
     admittedAt: { type: Date, required: true },
