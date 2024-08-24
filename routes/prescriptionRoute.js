@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const Prescription = require('../models/prescriptionModel');
 const verifyToken=require('../middleware');
+const Signup= require('../models/userModel');
+const Symptoms=require('../models/symptomsModel');
 
 // router.post('/prescriptions', async (req, res) => {
 //     try {
@@ -28,18 +30,19 @@ router.post('/prescriptions', async (req, res) => {
     res.status(400).json({ message: error.message });
   }
 });
-router.get('/prescriptions', verifyToken, async (req, res) => {
+
+
+router.get('/getprescriptions', verifyToken, async (req, res) => {
   try {
-    const userId = req.user.userId; 
-
-    if (!userId) {
-      return res.status(400).json({ message: "User ID is required" });
+    const symptoms = await Symptoms.find({patient:req.user.email});
+    if (!symptoms || symptoms.length === 0) {
+      return res.status(404).send('No symptoms for this patient');
     }
+    const symptomIds = symptoms.map(symptom => symptom._id);
 
-    // Find prescriptions for the user
-    const prescriptions = await Prescription.find({ patientId: userId });
-
-    if (prescriptions.length === 0) {
+    const prescriptions = await Prescription.find({ patientId: { $in: symptomIds } });
+    
+    if (!prescriptions || prescriptions.length === 0) {
       return res.status(404).json({ message: "No prescriptions found for this user" });
     }
 
@@ -51,14 +54,23 @@ router.get('/prescriptions', verifyToken, async (req, res) => {
 
 router.get('/getPescribe', async (req, res) => {
   try {
-    const prescriptions = await Prescription.find().sort({ createdAt: -1 });
+    const prescriptions = await Prescription.find();
     res.json(prescriptions);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 });
 
-router.get('getPescribe/:id', async (req, res) => {
+// router.get('/getPescribe', async (req, res) => {
+//   try {
+//     const prescriptions = await Prescription.find().sort({ createdAt: -1 });
+//     res.json(prescriptions);
+//   } catch (error) {
+//     res.status(500).json({ message: error.message });
+//   }
+// });
+
+router.get('getppppppescribe/:id', async (req, res) => {
   try {
     const prescription = await Prescription.findById(req.params.id);
     if (!prescription) {
