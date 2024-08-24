@@ -116,36 +116,36 @@ router.post('/hospitalDischargeReport', verifyToken, async (req, res) => {
 // });
 
 
-router.get('/gethospitalDischargeReport', verifyToken, async(req,res)=>{
-    try{
-       const report=await HospitalDischargeReport.find({ hospitalDischargeRequest: true });
-       res.status(200).json(report);
-    }catch(error){
-        res.status(500).json({ message: "Internal server error!",error:error.message });
-    }
-});
-
-// router.get('/gethospitalDischargeReport', verifyToken, async (req, res) => {
-//     try {
-//         const report=await HospitalDischargeReport.find({ hospitalDischargeRequest: true });
-//         if (!report || report.length === 0) {
-//          return res.status(404).send('No hospital discharge report for this patient');
-//        }
-
-//       const result = await Promise.all(report.map(async (rept) => {
-//         const dailyreport = await Report.find({ patient: rept.patientId });
-//         return {
-//           HospitalDischargeReport: rept,
-//           DailyReport: dailyreport.length > 0 ? dailyreport : 'No daily report found for this patient'
-//         };
-//       }));
-  
-//       res.status(200).json(result);
-//     } catch (error) {
-//       res.status(400).json({ message: error.message });
+// router.get('/gethospitalDischargeReport', verifyToken, async(req,res)=>{
+//     try{
+//        const report=await HospitalDischargeReport.find({ hospitalDischargeRequest: true });
+//        res.status(200).json(report);
+//     }catch(error){
+//         res.status(500).json({ message: "Internal server error!",error:error.message });
 //     }
-//   });
+// });
 
+
+router.get('/gethospitalDischargeReport', verifyToken, async (req, res) => {
+    try {
+        const report=await HospitalDischargeReport.find({ hospitalDischargeRequest: true });
+        if (!report || report.length === 0) {
+         return res.status(404).send('No hospital discharge report for this patient');
+       }
+      const result = await Promise.all(report.map(async (rept) => {
+        const dailyreport = await Report.find({ patientEmail: rept.patientEmail });
+        return {
+          HospitalDischargeReport: rept,
+          DailyReport: dailyreport.length > 0 ? dailyreport : 'No daily report found for this patient'
+        };
+      }));
+  
+      res.status(200).json(result);
+    } catch (error) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+  
 router.get('/gethospitalDischargeReportbyEmail', verifyToken, async(req,res)=>{
     try{
         const {email,firstName, lastName}=req.user;
