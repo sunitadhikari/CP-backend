@@ -102,7 +102,7 @@ router.put('/beds/:bedNumber/update-occupied-status', async (req, res) => {
         ward,
         bedNumbers,
         charges,
-        occupied
+        occupied: occupied || false
       });
   
       const savedBed = await newBed.save();
