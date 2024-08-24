@@ -1,21 +1,19 @@
-// emailService.js
 
 const nodemailer = require('nodemailer');
 
 const sendAdmissionEmail = async (patient) => {
     try {
         const transporter = nodemailer.createTransport({
-            service: 'gmail', // Replace with your email service
+            service: 'gmail', 
             auth: {
-                user: 'karthikpokharel@gmail.com',
-                pass: 'nbqr tojp uufx ikgj',
-            },
+                user: 'sunitaadhikari2001@gmail.com', 
+                pass: 'melo illm tkld mvyj',
+              }
         });
-        // email
 
         const mailOptions = {
-            from:  'karthikpokharel@gmail.com',
-            to: patient.email, // Send email to the patient's email
+            from:  'sunitaadhikari2001@gmail.com',
+            to: patient.email, 
             subject: 'Admission Confirmation',
             text: `Dear ${patient.firstName} ${patient.lastName},
             \n\nYou have been successfully admitted to the ${patient.department} department. 

@@ -3,14 +3,14 @@ const nodemailer = require('nodemailer');
 const transporter = nodemailer.createTransport({
     service: 'Gmail', // or your email provider
     auth: {
-        user: 'karthikpokharel@gmail.com',
-        pass: 'nbqr tojp uufx ikgj',
+        user: 'sunitaadhikari2001@gmail.com', 
+        pass: 'melo illm tkld mvyj',
     }
 });
 
 async function sendDischargeEmail(patientEmail, report) {
     const mailOptions = {
-        from: 'karthikpokharel@gmail.com',
+        from: 'sunitaadhikari2001@gmail.com',
         to: patientEmail,
         subject: 'Hospital Discharge Report',
         text: `

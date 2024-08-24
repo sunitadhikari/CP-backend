@@ -1,22 +1,20 @@
-// services/emailService.js
 
 const nodemailer = require('nodemailer');
 
 const dailyReport = async (report) => {
     try {
-        // Create a transporter object using your email service
         const transporter = nodemailer.createTransport({
-            service: 'gmail', // Replace with your email service
+            service: 'gmail', 
             auth: {
-                user: 'karthikpokharel@gmail.com', // Replace with your email
-                pass: 'nbqr tojp uufx ikgj', // Replace with your email password or app-specific password
+                user: 'sunitaadhikari2001@gmail.com', 
+                pass: 'melo illm tkld mvyj',
             },
         });
 
         // Prepare the email options
         const mailOptions = {
-            from: 'karthikpokharel@gmail.com', // Replace with your email
-            to: report.patientEmail, // Send email to the patient's email
+            from: 'sunitaadhikari2001@gmail.com',  
+            to: report.patientEmail, 
             subject: 'Daily Report',
             text: `A daily report has been created for you:
             
