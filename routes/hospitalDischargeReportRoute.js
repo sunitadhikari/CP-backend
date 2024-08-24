@@ -54,14 +54,9 @@ router.post('/hospitalDischargeReport', verifyToken, async (req, res) => {
         const report = new HospitalDischargeReport(req.body);
         //await report.save();
 
-<<<<<<< HEAD
-        // Update the bed status
-        const { ward, bedNumber} = req.body; // Ensure req.body contains ward and bedNumber
-=======
         // Update the patient document
         const { patientId } = req.body;
         await DoctorDischargeReport.findByIdAndUpdate(patientId, { dischargeRequest: false });
->>>>>>> 5d2269b310d32c187976d058593a373243b03488
 
         // Update the bed status
         const { ward, bedNumber } = req.body;
@@ -84,8 +79,6 @@ router.post('/hospitalDischargeReport', verifyToken, async (req, res) => {
     }
 });
 
-<<<<<<< HEAD
-=======
 // router.post('/hospitalDischargeReport', verifyToken, async (req, res) => {
 //     try {
 //         // Create and save the discharge report
@@ -115,7 +108,6 @@ router.post('/hospitalDischargeReport', verifyToken, async (req, res) => {
 //     }
 // });
 
->>>>>>> 5d2269b310d32c187976d058593a373243b03488
 
 router.get('/gethospitalDischargeReport', verifyToken, async(req,res)=>{
     try{
