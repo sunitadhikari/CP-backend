@@ -16,7 +16,8 @@ const hospitalDischargeReportSchema = new mongoose.Schema({
     ward: { type: String, required: true },
     bedNumber: { type: String, required: true },
     bed_charges:{type:String,required:true},
-    hospitalDischargeRequest: { type: Boolean, default: false }
+    hospitalDischargeRequest: { type: Boolean, default: false },
+    isPaid: { type: Boolean, default: false }
 
 });
 
