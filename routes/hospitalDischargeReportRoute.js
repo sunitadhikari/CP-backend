@@ -48,6 +48,10 @@ const Report = require('../models/reportModel')
 //         res.status(500).json({ message: error.message });
 //     }
 // });
+
+//
+
+
 router.post('/hospitalDischargeReport', verifyToken, async (req, res) => {
     try {
         const report = new HospitalDischargeReport(req.body);
