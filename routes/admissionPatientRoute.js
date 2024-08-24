@@ -6,17 +6,83 @@ const Patient = require('../models/admissionPatientModel');
 const Signup = require('../models/userModel');
 const Beds = require('../models/bedModel');
 const verifyToken=require('../middleware');
-
-// router.get('/patients', async (req, res) => {
+// router.post('/patients', verifyToken, async (req, res) => {
 //   try {
-//     const patients = await Patient.find();
-//     const patientCount = await Patient.countDocuments({});
+//     const { firstName, lastName, dob, gender, contactNumber, medicalHistory, department, bedNumber, admittedAt, dischargeDate, isActive, checkedBy } = req.body;
+    
+//     // Find the bed with the provided bedNumber
+//     const bed = await Beds.findOne({ bedNumbers:bedNumber });
+//     debugger
 
-//     res.json({patients,patientCount});
+//     if (!bed) {
+//       return res.status(400).json({ error: 'Bed not found' });
+//     }
+//     console.log(`Bed Details: ${JSON.stringify(bed)}`);
+//     console.log(`Bed Occupancy Status: ${bed.occupied} (Type: ${typeof bed.occupied})`);
+
+
+//     console.log(`Bed Occupancy Status: ${bed.occupied} ${bed.bedNumber} `); // Log the bed's occupied status
+
+//     if (bed.occupied == true) {
+//       return res.status(400).json({ error: 'Bed is already occupied' });
+//     }
+
+//     // If the bed is not occupied, proceed with patient admission
+//     const patient = new Patient(req.body);
+//     await patient.save();
+
+//     bed.occupied = true;
+//     await bed.save();
+
+//     res.status(201).json(patient);
 //   } catch (err) {
 //     res.status(400).json({ error: err.message });
 //   }
 // });
+router.post('/patients', verifyToken, async (req, res) => {
+  try {
+    const { firstName, lastName, dob, gender, contactNumber, medicalHistory, department, bedNumber, ward, admittedAt, dischargeDate, isActive, checkedBy } = req.body;
+
+    // Find the bed with the provided bedNumber and ward
+    const bed = await Beds.findOne({ bedNumbers: bedNumber, ward: ward });
+
+    if (!bed) {
+      // If bed is not found, return an error
+      console.log('Bed not found in the specified ward');
+      return res.status(400).json({ error: 'Bed not found in the specified ward' });
+    } else {
+      // Bed found, log details
+      console.log(`Bed Details: ${JSON.stringify(bed)}`);
+      console.log(`Bed Occupancy Status: ${bed.occupied} (Type: ${typeof bed.occupied})`);
+
+      if (bed.occupied === true) {
+        // If the bed is occupied, return an error
+        console.log(`Bed ${bed.bedNumbers} in ward ${bed.ward} is already occupied`);
+        return res.status(400).json({ error: 'Bed is already occupied', bedDetails: bed });
+      } else {
+        // If the bed is not occupied, proceed with patient admission
+        const patient = new Patient({
+          firstName, lastName, dob, gender, contactNumber, medicalHistory, department, bedNumber, ward, admittedAt, dischargeDate, isActive, checkedBy
+        });
+
+        await patient.save();
+
+        // Mark the bed as occupied
+        bed.occupied = true;
+        await bed.save();
+
+        // Respond with the newly created patient data
+        console.log('Patient admitted successfully');
+        return res.status(201).json(patient);
+      }
+    }
+  } catch (err) {
+    console.error('Error during patient admission:', err.message);
+    return res.status(400).json({ error: err.message });
+  }
+});
+
+
 router.get('/patients', async (req, res) => {
   try {
     const today = new Date();
@@ -102,15 +168,46 @@ router.put('/patients/:id/discharge', verifyToken, async (req, res) => {
 //     res.status(400).json({ error: err.message });
 //   }
 // });
-router.post('/patients',verifyToken, async (req, res) => {
-  try {
-    const patient = new Patient(req.body);
-    await patient.save();
-    res.status(201).json(patient);
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
-});
+// router.post('/patients', verifyToken, async (req, res) => {
+//   try {
+//     const { bedNumber, ...patientData } = req.body;
+
+//     // Find the bed with the provided bedNumber
+//     const bed = await Beds.findOne({ bedNumbers: bedNumber });
+    
+//     if (!bed) {
+//       return res.status(400).json({ error: 'Bed not found' });
+//     }
+
+//     if (bed.occupied === true) {
+//       return res.status(400).json({ error: 'Bed is already occupied' });
+//     }
+
+//     // Create and save the patient if the bed is available
+//     const patient = new Patient(patientData);
+//     await patient.save();
+
+//     // Update the bed status to occupied
+//     bed.occupied = true;
+//     await bed.save();
+
+//     res.status(201).json(patient);
+//   } catch (err) {
+//     res.status(400).json({ error: err.message });
+//   }
+// });
+
+
+// router.post('/patients',verifyToken, async (req, res) => {
+//   try {
+//     const { firstName, lastName, dob, gender, contactNumber,medicalHistory, department, bedNumber, admittedAt, dischargeDate,isActive, checkedBy } = req.body;
+//     const patient = new Patient(req.body);
+//     await patient.save();
+//     res.status(201).json(patient);
+//   } catch (err) {
+//     res.status(400).json({ error: err.message });
+//   }
+// });
 
 router.put('/patients/:id',verifyToken, async (req, res) => {
   try {
