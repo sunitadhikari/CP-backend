@@ -108,16 +108,38 @@ router.post('/postSchedule', async (req, res) => {
 //   }
 // });
 
+// router.get('/getSchedule', async (req, res) => {
+//   try {
+//     const schedul = await schedule.find();
+//     res.json(schedul);
+//   }
+//   catch (err) {
+//     res.status(500).json({ message: err.message });
+//   }
+// })
+
+
 router.get('/getSchedule', async (req, res) => {
   try {
-    const schedul = await schedule.find();
+    const schedules = await schedule.find();
+    if(!schedules || schedules.length=== 0){
+      return res.status(404).send("Schedule not found");
+    }
+    const schedul = await Promise.all(schedules.map(async sc => {
+      const doctor=await Signup.findOne({email:sc.doctorName});
+              return {
+                  ...sc._doc,
+                  doctorName: doctor.firstName + " " + doctor.lastName
+              }
+          }
+      ));  
+    
     res.json(schedul);
   }
   catch (err) {
     res.status(500).json({ message: err.message });
   }
 })
-
 
 //to get doctorschedule on doctor's profile
 router.get('/getschedulebyDoctor', verifyToken, async (req, res) => {
