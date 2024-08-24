@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const HospitalDischargeReport = require('../models/hospitalDischargeReportModel');
 const Bed = require('../models/bedModel'); 
+const DoctorDischargeReport = require('../models/doctorDischargeReportModel');
 
 const verifyToken=require('../middleware');
 
@@ -17,15 +18,45 @@ const verifyToken=require('../middleware');
 // });
  
 
+// router.post('/hospitalDischargeReport', verifyToken, async (req, res) => {
+//     try {
+//         // Create and save the discharge report
+//         const report = new HospitalDischargeReport(req.body);
+//         await report.save();
+
+//         // Update the bed status
+//         const { ward, bedNumber } = req.body; // Ensure req.body contains ward and bedNumber
+
+//         const bed = await Bed.findOne({ ward, bedNumbers: bedNumber });
+//         if (!bed) {
+//             return res.status(404).json({ message: 'Bed not found' });
+//         }
+
+//         bed.occupied = false;
+//         await bed.save();
+
+//         res.status(201).json({
+//             message: 'Hospital Discharge Report saved successfully and bed status updated',
+//             report
+//         });
+//     } catch (error) {
+//         res.status(500).json({ message: error.message });
+//     }
+// });
+
+// Route for handling hospital discharge report submission
 router.post('/hospitalDischargeReport', verifyToken, async (req, res) => {
     try {
         // Create and save the discharge report
         const report = new HospitalDischargeReport(req.body);
         await report.save();
 
-        // Update the bed status
-        const { ward, bedNumber } = req.body; // Ensure req.body contains ward and bedNumber
+        // Update the patient document
+        const { patientId } = req.body;
+        await DoctorDischargeReport.findByIdAndUpdate(patientId, { dischargeRequest: false });
 
+        // Update the bed status
+        const { ward, bedNumber } = req.body;
         const bed = await Bed.findOne({ ward, bedNumbers: bedNumber });
         if (!bed) {
             return res.status(404).json({ message: 'Bed not found' });
@@ -43,7 +74,35 @@ router.post('/hospitalDischargeReport', verifyToken, async (req, res) => {
     }
 });
 
-module.exports = router;
+// router.post('/hospitalDischargeReport', verifyToken, async (req, res) => {
+//     try {
+//         // Create and save the discharge report
+//         const report = new HospitalDischargeReport(req.body);
+//         await report.save();
+
+//         // Update the bed status
+//         const { ward, bedNumber, patientId } = req.body; // Ensure req.body contains ward, bedNumber, and patientId
+
+//         const bed = await Bed.findOne({ ward, bedNumbers: bedNumber });
+//         if (!bed) {
+//             return res.status(404).json({ message: 'Bed not found' });
+//         }
+
+//         bed.occupied = false;
+//         await bed.save();
+
+//         // Update dischargeRequest field in the Patient model
+//         await DoctorDischargeReport.findByIdAndUpdate(patientId, { dischargeRequest: false });
+
+//         res.status(201).json({
+//             message: 'Hospital Discharge Report saved successfully, bed status updated, and patient dischargeRequest set to false',
+//             report
+//         });
+//     } catch (error) {
+//         res.status(500).json({ message: error.message });
+//     }
+// });
+
 
 router.get('/gethospitalDischargeReport', verifyToken, async(req,res)=>{
     try{
