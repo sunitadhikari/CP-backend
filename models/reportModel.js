@@ -4,6 +4,7 @@ const Schema = mongoose.Schema;
 
 const reportSchema = new Schema({
   patient: { type: Schema.Types.ObjectId, ref: 'Patient', required: true },
+  patientEmail: { type: String, required: true },
   date: { type: Date, required: true },
   symptoms: { type: String, required: true },
   diagnosis: { type: String, required: true },
