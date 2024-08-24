@@ -24,6 +24,7 @@ const admissionPatientRoute=require('./routes/admissionPatientRoute')
 const wardRouted=require('./routes/wardRouted')
 const billRoutes=require('./routes/billRoutes')
 const reportRoute=require('./routes/reportRoute')
+const admitPatientPaymentsRoutes=require('./routes/admitPatientPaymentsRoutes')
 
 
 app.use(express.json())
@@ -50,6 +51,7 @@ app.use(admissionPatientRoute);
 app.use(wardRouted);
 app.use(billRoutes);
 app.use(reportRoute);
+app.use(admitPatientPaymentsRoutes);
 
 
 

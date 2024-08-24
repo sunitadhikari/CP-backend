@@ -11,6 +11,7 @@ const sendAdmissionEmail = async (patient) => {
                 pass: 'nbqr tojp uufx ikgj',
             },
         });
+        // email
 
         const mailOptions = {
             from:  'karthikpokharel@gmail.com',
