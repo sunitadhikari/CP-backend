@@ -15,9 +15,29 @@ router.post('/dailyReport', async (req, res) => {
   });
   
   // Get all reports
+  // router.get('/getDailyReport', async (req, res) => {
+  //   try {
+  //     const reports = await Report.find();
+  //     res.status(200).json(reports);
+  //   } catch (error) {
+  //     res.status(400).json({ message: error.message });
+  //   }
+  // });
+
   router.get('/getDailyReport', async (req, res) => {
     try {
-      const reports = await Report.find();
+      const report = await Report.find();
+      if(!report || report.length=== 0){
+        return res.status(404).send("Report not found");
+      }
+      const reports = await Promise.all(report.map(async rt => {
+        const patient=await Signup.findOne({email:rt.patientEmail});
+                return {
+                    ...rt._doc,
+                    patientEmail: patient.firstName + " " + patient.lastName
+                }
+            }
+        ));  
       res.status(200).json(reports);
     } catch (error) {
       res.status(400).json({ message: error.message });
