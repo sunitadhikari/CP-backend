@@ -9,8 +9,8 @@ const bcrypt=require('bcrypt');
 const transporter = nodemailer.createTransport({
     service: 'Gmail',
     auth: {
-        user: 'karthikpokharel@gmail.com',
-        pass: 'nbqr tojp uufx ikgj',
+      user: 'sunitaadhikari2001@gmail.com', 
+      pass: 'melo illm tkld mvyj',
     }
 });
 
@@ -23,7 +23,7 @@ function sendVerificationEmail(user) {
     const verificationUrl = `http://localhost:3000/verify-signup?token=${token}`;
     
     const mailOptions = {
-        from: 'karthikpokharel@gmail.com',
+        from: 'sunitaadhikari2001@gmail.com',
         to: user.email,
         subject: 'Email Verification for Signup',
         text: `Please click the following link to verify your login: ${verificationUrl}`
