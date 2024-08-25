@@ -3,7 +3,7 @@ const router = express.Router();
 const Report = require('../models/reportModel');
 const verifyToken=require('../middleware');
 const { dailyReport } = require('../controllers/dailyEmail'); 
-
+const Admission = require('../models/admissionPatientModel')
 
 
 // router.post('/dailyReport', async (req, res) => {
@@ -60,7 +60,7 @@ router.post('/dailyReport', async (req, res) => {
         return res.status(404).send("Report not found");
       }
       const reports = await Promise.all(report.map(async rt => {
-        const patient=await Signup.findOne({email:rt.patientEmail});
+        const patient=await Admission.findOne({email:rt.patientEmail});
                 return {
                     ...rt._doc,
                     patientEmail: patient.firstName + " " + patient.lastName
